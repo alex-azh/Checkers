@@ -1,26 +1,37 @@
-﻿Test();
-
-#region Tests
-void Test()
+﻿using System.Numerics;
+Test2();
+void Test2()
 {
-    var doska = new Doska(
-    WhiteP: 0b00000000000000000000000000000001,
-    WhiteD: 0b0,
-    BlackP: 0,
-    BlackD: 512);
-    // x, sopernik, all
-    Func<uint, uint, uint, uint> hod1 = (uint x, uint sopernik, uint all) =>
+    var doska = new Doska(0b0000000000000000000000000001111, 0, 0b11111111111100000000000011000000, 0);
+    var joinedAll = string.Join(", ", Doska.Indexes(doska.All).Select(BitOperations.Log2));
+    Console.WriteLine("All:\n{0}\n", joinedAll);
+    foreach (var d in doska.WhitePVariants())
     {
-        var x4 = x << 4;
-        return (((x4 & sopernik) << 5) | x4) & ~all;
-    };
-    var result = hod1(0b00000000000000000000000000000001, doska.Blacks, doska.All);
-    Console.WriteLine(result);
+        var oldPos = BitOperations.Log2(doska.Whites & ~d.Whites);
+        var newPos = BitOperations.Log2(d.Whites & ~doska.Whites);
+        Console.WriteLine($"Ход: {oldPos}-->{newPos}");
+    }
+
 }
-#endregion
+void Test1()
+{
+    var doska = new Doska(0b00000000000000000000111111111111, 0, 0b11111111111100000000000000000000, 0);
+    var joinedAll = string.Join(", ", Doska.Indexes(doska.All).Select(BitOperations.Log2));
+    Console.WriteLine("All:\n{0}\n", joinedAll);
+    foreach (var d in doska.WhitePVariants())
+    {
+        var oldPos = BitOperations.Log2(doska.Whites & ~d.Whites);
+        var newPos = BitOperations.Log2(d.Whites & ~doska.Whites);
+        Console.WriteLine($"Ход: {oldPos}-->{newPos}");
+    }
+
+}
 
 public record Doska(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
 {
+    public uint Whites => WhiteP | WhiteD;
+    public uint Blacks => BlackP | BlackD;
+    public uint All => Whites | Blacks;
     public IEnumerable<Doska> WhitePVariants()
     {
         foreach (uint position in Indexes(WhiteP))
@@ -28,21 +39,77 @@ public record Doska(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
             Func<uint, uint, uint, (uint step, IKill kill)>[] steps = Masks.P[position];
             foreach (var func in steps)
             {
-                (uint step, IKill kill) res = func(position, Blacks, All);
+                (uint step, IKill kill) = func(position, Blacks, All);
                 // получить Doska для ходьбы для текущего step
-
-                // получить Doska для рубки для текущего kill
-                uint blackP = BlackP & ~res.kill.DeletedFigure,
-                    blackD = BlackD & ~res.kill.DeletedFigure,
-                    whiteP = (WhiteP & res.kill.IndexHoda) & ~position;
-                yield return new(whiteP, WhiteD, blackP, blackD);
+                if (step != 0)
+                {
+                    yield return new(
+                    WhiteP & ~position | step,
+                    WhiteD,
+                    BlackP,
+                    BlackD);
+                }
+                if (kill.IsAvailable)
+                {
+                    // получить Doska для рубки для текущего kill
+                    yield return new(
+                        WhiteP & ~position | kill.MaskaVstavki,
+                        WhiteD,
+                        BlackP & ~kill.DeletedFigure,
+                        BlackD & ~kill.DeletedFigure);
+                }
             }
         }
-        // TODO: то же самое - для дамок.
+        foreach (uint position in Indexes(WhiteD))
+        {
+            Func<uint, uint, uint, (uint step, IKill kill)>[] steps = Masks.P[position];
+            foreach (var func in steps)
+            {
+                (uint step, IKill kill) = func(position, Blacks, All);
+                // получить Doska для ходьбы для текущего step
+                yield return new(
+                    WhiteP,
+                    WhiteD & ~position | step,
+                    BlackP,
+                    BlackD);
+                if (kill.IsAvailable)
+                {
+                    // получить Doska для рубки для текущего kill
+                    yield return new(
+                        WhiteP,
+                        WhiteD & ~position | kill.MaskaVstavki,
+                        BlackP & ~kill.DeletedFigure,
+                        BlackD & ~kill.DeletedFigure);
+                }
+            }
+        }
     }
-    public uint Whites => WhiteP | WhiteD;
-    public uint Blacks => BlackP | BlackD;
-    public uint All => Whites | Blacks;
+    public IEnumerable<Doska> WhiteDVariants()
+    {
+        foreach (uint position in Indexes(WhiteD))
+        {
+            Func<uint, uint, uint, (uint step, IKill kill)>[] steps = Masks.P[position];
+            foreach (var func in steps)
+            {
+                (uint step, IKill kill) = func(position, Blacks, All);
+                // получить Doska для ходьбы для текущего step
+                yield return new(
+                    WhiteP,
+                    WhiteD & ~position | step,
+                    BlackP,
+                    BlackD);
+                if (kill.IsAvailable)
+                {
+                    // получить Doska для рубки для текущего kill
+                    yield return new(
+                        WhiteP,
+                        WhiteD & ~position | kill.MaskaVstavki,
+                        BlackP & ~kill.DeletedFigure,
+                        BlackD & ~kill.DeletedFigure);
+                }
+            }
+        }
+    }
 
     public static IEnumerable<uint> Indexes(uint x)
     {

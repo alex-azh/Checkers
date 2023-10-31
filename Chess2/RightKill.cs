@@ -1,4 +1,4 @@
-﻿public record struct RightKill(uint IndexHoda) : IKill
+﻿public record struct RightKill(uint MaskaVstavki) : IKill
 {
-    public uint DeletedFigure => IndexHoda >> 5;
+    public uint DeletedFigure => MaskaVstavki >> 5;
 }
