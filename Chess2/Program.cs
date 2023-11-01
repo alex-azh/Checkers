@@ -3,7 +3,17 @@
 TestKills1();
 TestVariants1();
 TestKills2();
+TestKills3();
 
+void TestKills3()
+{
+    var doska = new Doska(0b00000000000000100000111111111111, 0, 0b11111111111100000011000000000000, 0);
+    var testDoska = new TestDoska(doska);
+    testDoska.TestWhiteKillsVariants(new List<(int, int, int)>()
+    {
+        (9, 16, 12), (9, 18, 13)
+    });
+}
 void TestKills2()
 {
     var doska = new Doska(0b00000000000000000000111111111111, 0, 0b11111111111100000011000000000000, 0);

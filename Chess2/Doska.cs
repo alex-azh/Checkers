@@ -1,4 +1,6 @@
-﻿public record Doska(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
+﻿using System.Numerics;
+
+public record Doska(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
 {
     public uint Whites => WhiteP | WhiteD;
     public uint Blacks => BlackP | BlackD;
@@ -24,17 +26,18 @@
         foreach (uint position in Indexes(WhiteP))
         {
             // рубит пешка
-            IHod maska = Masks.ForwardKillStruct[position];
-            foreach ((uint hod, uint kill) in maska.Variants())
+            if (Masks.ForwardKillStruct.TryGetValue(position, out IHod? maska))
             {
-                uint r = kill & Blacks;
-                if (r != 0)
+                foreach ((uint hod, uint kill) in maska.Variants())
                 {
-                    yield return new(
-                        WhiteP & ~position | hod,
-                        WhiteD,
-                        BlackP & ~kill,
-                        BlackD & ~kill);
+                    if ((kill & Blacks) != 0 && (hod & ~All) != 0)
+                    {
+                        yield return new(
+                            WhiteP & ~position | hod,
+                            WhiteD,
+                            BlackP & ~kill,
+                            BlackD & ~kill);
+                    }
                 }
             }
         }
