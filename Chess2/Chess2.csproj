@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Benchs\" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.9" />
   </ItemGroup>
 
 </Project>

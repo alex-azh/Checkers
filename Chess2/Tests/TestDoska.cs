@@ -30,6 +30,16 @@ public record struct TestDoska(Doska D)
             Console.WriteLine(p);
         }
     }
+    public void TestWhiteVariantsCount(IEnumerable<(int pos, int hod)> actual)
+    {
+        var values = actual.Except(WhiteVariants()).Any() ? actual.Except(WhiteVariants()) : WhiteVariants().Except(actual);
+        _ = values.Count();
+    }
+    public void TestWhiteKillsVariantsCount(IEnumerable<(int, int, int)> actual)
+    {
+        var values = actual.Except(WhiteKillsVariants()).Any() ? actual.Except(WhiteKillsVariants()) : WhiteKillsVariants().Except(actual);
+        _ = values.Count();
+    }
     public void TestWhiteKillsVariants(IEnumerable<(int, int, int)> actual)
     {
         var values = actual.Except(WhiteKillsVariants()).Any() ? actual.Except(WhiteKillsVariants()) : WhiteKillsVariants().Except(actual);
