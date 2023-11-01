@@ -5,6 +5,24 @@ public record Doska(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
     public uint Whites => WhiteP | WhiteD;
     public uint Blacks => BlackP | BlackD;
     public uint All => Whites | Blacks;
+    public static Func<Doska, Doska, (int pos, int hod)> StepOutput = (prev, next) =>
+    {
+        int oldPos = BitOperations.Log2(prev.Whites & ~next.Whites);
+        int newPos = BitOperations.Log2(next.Whites & ~prev.Whites);
+        return (oldPos, newPos);
+    };
+    public static Func<Doska, Doska, (int pos, int hod, int dead)> KillOutput = (prev, next) =>
+    {
+        int oldPos = BitOperations.Log2(prev.Whites & ~next.Whites);
+        int newPos = BitOperations.Log2(next.Whites & ~prev.Whites);
+        int dead = BitOperations.Log2(prev.Blacks & ~next.Blacks);
+        return (oldPos, newPos, dead);
+    };
+    public IEnumerable<Doska> Variants()
+    {
+        return WhitePVariants().Concat(WhitePKills());
+    }
+    public (int, int, int) GetHod(int number) => KillOutput(this, Variants().ElementAt(number));
     public IEnumerable<Doska> WhitePVariants()
     {
         foreach (uint position in Indexes(WhiteP))
@@ -77,5 +95,14 @@ public record Doska(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
             yield return res;
             x ^= res;
         }
+    }
+    public static uint CreateNumber(params short[] numbers)
+    {
+        uint result = 0;
+        foreach (var x in numbers)
+        {
+            result |= 1u << x;
+        }
+        return result;
     }
 }
