@@ -1,12 +1,14 @@
-﻿// Если все тесты проходит, то консоль пустая.
+﻿namespace Chess2.Tests;
 
-public static class TestClass
+public class TestClassJulia
 {
+    public uint AllBlack = 0b11_11111_11111_00000_00000_00110_00000;
+    public uint AllWhite = 0b00_00000_00000_00000_00011_11111_11111;
     public static void TestKills3Count()
     {
         var doska = new Doska(0b00000000000000100000111111111111, 0, 0b11111111111100000011000000000000, 0);
         var testDoska = new TestDoska(doska);
-        _ = testDoska.TestWhiteKillsVariants(new List<(int, int, int)>()
+        _ = testDoska.TestKillsJulia(new List<(int, int, int)>()
         {
         }).Count();
     }
@@ -14,7 +16,7 @@ public static class TestClass
     {
         var doska = new Doska(0b00000000000000100000111111111111, 0, 0b11111111111100000011000000000000, 0);
         var testDoska = new TestDoska(doska);
-        foreach (var p in testDoska.TestWhiteKillsVariants(new List<(int, int, int)>()
+        foreach (var p in testDoska.TestKillsJulia(new List<(int, int, int)>()
         {
         (9, 16, 12), (9, 18, 13)
         }))
@@ -26,7 +28,7 @@ public static class TestClass
     {
         var doska = new Doska(0b00000000000000000000111111111111, 0, 0b11111111111100000011000000000000, 0);
         var testDoska = new TestDoska(doska);
-        _ = testDoska.TestWhiteKillsVariants(new List<(int, int, int)>()
+        _ = testDoska.TestKillsJulia(new List<(int, int, int)>()
         {
 
         }).Count();
@@ -35,7 +37,7 @@ public static class TestClass
     {
         var doska = new Doska(0b00000000000000000000111111111111, 0, 0b11111111111100000011000000000000, 0);
         var testDoska = new TestDoska(doska);
-        foreach (var p in testDoska.TestWhiteKillsVariants(new List<(int, int, int)>()
+        foreach (var p in testDoska.TestKillsJulia(new List<(int, int, int)>()
     {
         (8, 17, 12),
         (9, 16, 12),
@@ -50,7 +52,7 @@ public static class TestClass
     {
         var doska = new Doska(0b0000000000000000000000000001111, 0, 0b11111111111100000000000011000000, 0);
         var testDoska = new TestDoska(doska);
-        _ = testDoska.TestWhiteKillsVariants(new List<(int, int, int)>()
+        _ = testDoska.TestKillsJulia(new List<(int, int, int)>()
         {
         }).Count();
     }
@@ -66,32 +68,12 @@ public static class TestClass
             Console.WriteLine(p.ToString());
         }
     }
-    public static void TestVariants1Count()
-    {
-        var doska = new Doska(0b00000000000000000000111111111111, 0, 0b11111111111100000000000000000000, 0);
-        var testDoska = new TestDoska(doska);
-        _ = testDoska.TestWhiteVariants(new List<(int, int)>()
-        {
-        }).Count();
-    }
-    public static void TestVariants1()
-    {
-        var doska = new Doska(0b00000000000000000000111111111111, 0, 0b11111111111100000000000000000000, 0);
-        var testDoska = new TestDoska(doska);
-        foreach (var p in testDoska.TestWhiteVariants(new List<(int, int)>()
-    {
-        (8, 12), (9, 12), (9, 13), (10, 13), (10, 14), (11, 14), (11, 15)
-    }))
-        {
-            Console.WriteLine(p.ToString());
-        }
-    }
     public static void TestKills4()
     {
         var doska = new Doska(
-            0b00_00000_00000_00100_00000_00000_00000,
+            0b00_00000_00000_00100_00000_00000_00000, 
             0,
-            0b00_00000_00001_00000_00000_00000_00000,
+            0b00_00000_00001_00000_00000_00000_00000, 
             0b00_00000_00000_00000_00000_00000_00000);
         var testDoska = new TestDoska(doska);
         var actual = new List<(int, int, int)>()

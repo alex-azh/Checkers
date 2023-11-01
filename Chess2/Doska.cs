@@ -42,6 +42,33 @@ public record Doska(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
             }
         }
     }
+    public IEnumerable<Doska> WhitePKills()
+    {
+        foreach (uint position in Indexes(WhiteP))
+        {
+            if (Masks.ForwardKill.TryGetValue(position, out uint maskaHodov))
+            {
+                maskaHodov &= ~All;
+                foreach (var hod in Indexes(maskaHodov))
+                {
+                    int logPos = BitOperations.Log2(position),
+                        delta = BitOperations.Log2(hod) - logPos,
+                        ryad = logPos / 4;
+                    Func<uint, int, uint> funcForSearchDeletedPos = Masks.Delta[delta];
+                    uint deletedPosition = funcForSearchDeletedPos(position, ryad);
+                    if ((deletedPosition & Blacks) != 0)
+                    {
+                        yield return new(
+                            WhiteP & ~position | hod,
+                            WhiteD,
+                            BlackP & ~deletedPosition,
+                            BlackD & ~deletedPosition
+                            );
+                    }
+                }
+            }
+        }
+    }
     public static IEnumerable<uint> Indexes(uint x)
     {
         while (x > 0)

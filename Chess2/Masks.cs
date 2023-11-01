@@ -1,6 +1,13 @@
 ﻿// x, sopernik, all
 public static class Masks
 {
+    public static Dictionary<int, Func<uint, int, uint>> Delta = new()
+        {
+            {7, new((pos, ryad)=>pos<<(3 + (ryad % 2))) },
+            {9, new((pos, ryad)=>pos<<(4 + (ryad % 2))) },
+            {-9, new((pos, ryad) => pos >>(5 -(ryad % 2))) },
+            {-7, new((pos, ryad) => pos >>(4 -(ryad % 2))) }
+        };
     public static Dictionary<uint, uint> Forward = new()
     {
         { 0b00_00000_00000_00000_00000_00000_00001, 0b00_00000_00000_00000_00000_00000_10000 }, //0 4
