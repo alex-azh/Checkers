@@ -9,7 +9,7 @@
             x ^= res;
         }
     }
-    public static uint CreateNumber(params short[] numbers)
+    public static uint CreateNumber(params int[] numbers)
     {
         uint result = 0;
         foreach (var x in numbers)
