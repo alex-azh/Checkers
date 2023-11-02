@@ -25,11 +25,11 @@ public record Doska(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
     public (int, int, int) GetHod(int number) => KillOutput(this, Variants().ElementAt(number));
     public IEnumerable<Doska> WhitePVariants()
     {
-        foreach (uint position in Indexes(WhiteP))
+        foreach (uint position in UintHelper.Indexes(WhiteP))
         {
             // ход пешки
             uint maska = Masks.Forward[position] & ~All;
-            foreach (var hod in Indexes(maska))
+            foreach (var hod in UintHelper.Indexes(maska))
             {
                 yield return new(
                     WhiteP & ~position | hod,
@@ -41,7 +41,7 @@ public record Doska(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
     }
     public IEnumerable<Doska> WhitePKillVariants()
     {
-        foreach (uint position in Indexes(WhiteP))
+        foreach (uint position in UintHelper.Indexes(WhiteP))
         {
             // рубит пешка
             if (Masks.ForwardKillStruct.TryGetValue(position, out IHod? maska))
@@ -62,12 +62,12 @@ public record Doska(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
     }
     public IEnumerable<Doska> WhitePKills()
     {
-        foreach (uint position in Indexes(WhiteP))
+        foreach (uint position in UintHelper.Indexes(WhiteP))
         {
             if (Masks.ForwardKill.TryGetValue(position, out uint maskaHodov))
             {
-                maskaHodov &= ~All;
-                foreach (var hod in Indexes(maskaHodov))
+                maskaHodov &= ~All; 
+                foreach (var hod in UintHelper.Indexes(maskaHodov))
                 {
                     int logPos = BitOperations.Log2(position),
                         delta = BitOperations.Log2(hod) - logPos,
@@ -86,23 +86,5 @@ public record Doska(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
                 }
             }
         }
-    }
-    public static IEnumerable<uint> Indexes(uint x)
-    {
-        while (x > 0)
-        {
-            var res = x & ~(x - 1);
-            yield return res;
-            x ^= res;
-        }
-    }
-    public static uint CreateNumber(params short[] numbers)
-    {
-        uint result = 0;
-        foreach (var x in numbers)
-        {
-            result |= 1u << x;
-        }
-        return result;
     }
 }

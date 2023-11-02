@@ -2,7 +2,7 @@
 {
     public IEnumerable<(uint hod, uint kill)> Variants()
     {
-        var chisla = Doska.Indexes(Mask).ToArray();
+        var chisla = UintHelper.Indexes(Mask).ToArray();
         yield return (chisla[1], chisla[0]);
     }
 }
