@@ -19,7 +19,7 @@ public record CheckerBoard(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
         int dead = BitOperations.Log2(prev.Blacks & ~next.Blacks);
         return (oldPos, newPos, dead);
     };
-   
+
     public IEnumerable<CheckerBoard> VariantsP()
     {
         foreach (var position in UintHelper.Indexes(WhiteP))
@@ -58,7 +58,13 @@ public record CheckerBoard(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
             #endregion
         }
     }
+
     // TODO: сделать VariantsD();
+    public IEnumerable<CheckerBoard> VariantsD()
+    {
+        yield break;
+    }
+
     #region Obsolete
     [Obsolete]
     public IEnumerable<CheckerBoard> Variants()
