@@ -1,4 +1,5 @@
-﻿public static class UintHelper
+﻿namespace Chess2;
+public static class UintHelper
 {
     public static IEnumerable<uint> Indexes(uint x)
     {

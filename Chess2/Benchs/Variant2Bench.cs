@@ -12,19 +12,19 @@ namespace Chess2.Benchs;
 [ShortRunJob]
 public class Variant2Bench
 {
-    public static uint Whites = UintHelper.CreateNumber(0, 1, 11, 15, 21);
-    public static uint Blacks = UintHelper.CreateNumber(4, 8, 5, 10, 18, 19, 26);
-    public static uint AllBlack = 0b11_11111_11111_00000_00000_00000_00000;
-    public static uint AllWhite = 0b00_00000_00000_00000_00011_11111_11111;
-    public static CheckerBoard Board = new(AllWhite, 0, AllBlack, 0);
+    public readonly static uint Whites = UintHelper.CreateNumber(0, 1, 11, 15, 21);
+    public readonly static uint Blacks = UintHelper.CreateNumber(4, 8, 5, 10, 18, 19, 26);
+    public readonly static uint AllBlack = 0b11_11111_11111_00000_00000_00000_00000;
+    public readonly static uint AllWhite = 0b00_00000_00000_00000_00011_11111_11111;
+    public readonly static CheckersBoard Board = new(AllWhite, 0, AllBlack, 0);
 
+    //[Benchmark]
+    //public void Var1()
+    //{
+    //    _ = Board.Variants_old().Count();
+    //}
     [Benchmark]
-    public void Var1()
-    {
-        _ = Board.Variants().Count();
-    }
-    [Benchmark]
-    public void Var2()
+    public void VariantsP()
     {
         _ = Board.VariantsP().Count();
     }
