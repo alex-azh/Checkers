@@ -85,4 +85,26 @@ public class KillsTests
         var doska = new CheckersBoard(AllWhite, 0, AllBlack, 0);
         Assert.AreEqual(7, doska.VariantsP().Count());
     }
+    [TestMethod]
+    public void ReverseUint1()
+    {
+        uint x = 0b1001100;
+        uint revX = UintHelper.Reverse1(x);
+        Assert.AreEqual(838860800u, revX);
+    }
+    [TestMethod]
+    public void ReverseUint2()
+    {
+        uint x = 0b1001100;
+        uint revX = UintHelper.Reverse2(x);
+        Assert.AreEqual(838860800u, revX);
+    }
+    [TestMethod]
+    public void GetBitArrayTest()
+    {
+        List<uint> data = new List<uint>() { 0b1111_1010, 0b110011001100};
+        var resultArray = UintHelper.GetBitArray(data);
+
+        int x = 1;
+    }
 }
