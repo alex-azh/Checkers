@@ -21,7 +21,7 @@ public record CheckersBoard(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
     };
 
     public CheckersBoard Reverse() => new(UintHelper.Reverse(BlackP), UintHelper.Reverse(BlackD), UintHelper.Reverse(WhiteP), UintHelper.Reverse(WhiteD));
-
+    public bool[] BoolArray() => UintHelper.GetBoolArray(this);
     public IEnumerable<CheckersBoard> Variants()
     {
         foreach (var position in UintHelper.Moves(WhiteP))

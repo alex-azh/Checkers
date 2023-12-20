@@ -25,10 +25,10 @@
     public record Tree(CheckersBoard Board, bool ImPlayer)
     {
         public List<Tree> Nodes { get; private set; } = new();
+        public float Cost { get; private set; }
 
         public float Deep { get; private set; }
         public bool CanContinue => (Deep >= Constants.DeepControl) &&
-            // если есть ход у нас (шашки или дамки)
             Board.WhiteP * Board.WhiteD != 0;
 
         public void Create()
@@ -44,6 +44,7 @@
             float deep = Deep / count;
             foreach (Tree node in Nodes)
             {
+                //Board.BoolArray();
                 node.Deep = deep;
                 node.Create();
             }
@@ -72,18 +73,17 @@
                 {
                     continue;
                 }
+                // в листе находимся
                 node.Deep /= Deep;
                 node.Create();
-                // вернуть от всех новых созданных массивы для нейронки
-                foreach (var tree in node.Forward())
-                {
-                    // у tree.Board получить массив для нейронки.
-                    bool[][] array = tree.GetArrayForNeuro();
-                }
+                // массивы для нейронки
+                bool[][] array = GetArrayForNeuro();
 
             }
         }
         public bool[][] GetArrayForNeuro() =>
+            //from tree in Forward()
+            //select UintHelper.GetBoolArray(tree.Board)
             Forward().Select(tree => UintHelper.GetBoolArray(tree.Board)).ToArray();
     }
 }
