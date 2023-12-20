@@ -1,16 +1,15 @@
 ﻿namespace Chess2.Modules
 {
-    public interface IEvaluator
+    public interface IPredictor
     {
-        float[] PredictValues();
+        bool[][] PredictValues();
     }
     /// <summary>
     /// Оценивает каждую доску как вектор. Предполагается, что оценивает несколько досок из дерева решений.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="Worker">ML model for predict.</param>
-    public record Evaluator<T>(T Worker)
-        where T : IEvaluator;
+    public record Evaluator(IPredictor Worker);
 
     /* Алгоритим:
      * 1. Проверить, можно ли дальше.
@@ -20,7 +19,7 @@
 
     public static class Constants
     {
-        public static float DeepControl = 1 / 32;
+        public static float DeepControl = 1f / 32;
     }
 
     public record Tree(CheckersBoard Board, bool ImPlayer)
@@ -28,9 +27,9 @@
         public List<Tree> Nodes { get; private set; } = new();
 
         public float Deep { get; private set; }
-        public bool CanContinue => (Deep >= Constants.DeepControl) ||
+        public bool CanContinue => (Deep >= Constants.DeepControl) &&
             // если есть ход у нас (шашки или дамки)
-            UintHelper.Moves(Board.WhiteP).Any() || UintHelper.Moves(Board.WhiteD).Any();
+            Board.WhiteP * Board.WhiteD != 0;
 
         public void Create()
         {
@@ -85,6 +84,6 @@
             }
         }
         public bool[][] GetArrayForNeuro() =>
-            Forward().Select(tree => UintHelper.GetBitArray(tree.Board)).ToArray();
+            Forward().Select(tree => UintHelper.GetBoolArray(tree.Board)).ToArray();
     }
 }

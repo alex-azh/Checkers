@@ -20,7 +20,7 @@ public record CheckersBoard(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
         return (oldPos, newPos, dead);
     };
 
-    public CheckersBoard Reverse() => new(UintHelper.Reverse2(BlackP), UintHelper.Reverse2(BlackD), UintHelper.Reverse2(WhiteP), UintHelper.Reverse2(WhiteD));
+    public CheckersBoard Reverse() => new(UintHelper.Reverse(BlackP), UintHelper.Reverse(BlackD), UintHelper.Reverse(WhiteP), UintHelper.Reverse(WhiteD));
 
     public IEnumerable<CheckersBoard> Variants()
     {
