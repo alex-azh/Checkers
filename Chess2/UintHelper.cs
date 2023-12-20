@@ -4,7 +4,7 @@ using System.Collections;
 namespace Chess2;
 public static class UintHelper
 {
-    public static IEnumerable<uint> Indexes(uint x)
+    public static IEnumerable<uint> Moves(uint x)
     {
         while (x > 0)
         {
@@ -34,7 +34,7 @@ public static class UintHelper
     public static uint Reverse2(uint x)
     {
         uint result = 0;
-        IEnumerable<uint> items = Indexes(x);
+        IEnumerable<uint> items = Moves(x);
         foreach (var item in items)
         {
             int index = (int)Math.Log2(item);
@@ -43,17 +43,25 @@ public static class UintHelper
         return result;
     }
 
-    public static Array GetBitArray(IEnumerable<uint> data)
+    public static bool[] GetBitArray(CheckersBoard board)
     {
         bool[] result = new bool[128];
         int index = 0;
-        foreach (uint item in data)
+        tt(board.WhiteP);
+        tt(board.WhiteD);
+        tt(board.BlackP);
+        tt(board.BlackD);
+        void tt(uint number)
         {
-            BitArray ba = new BitArray(BitConverter.GetBytes(item));
+            BitArray ba = new BitArray(BitConverter.GetBytes(number));
             //ba.CopyTo(result, index);
-            ba.Cast<bool>().Reverse().ToArray().CopyTo(result, index);
+            ba.Cast<bool>().ToArray().CopyTo(result, index);
             index += 32;
         }
         return result;
-    } 
+    }
+    //public static bool[] GetBoolArray(uint t1, uint t2, uint t3, uint t4)
+    //{
+    //    return Moves(t1).Concat(Moves(t2)).Concat(Moves(t3)).Concat(Moves(t4)).Select(x=>(bool)x).ToArray();
+    //}
 }

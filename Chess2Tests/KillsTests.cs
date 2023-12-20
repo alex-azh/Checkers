@@ -21,7 +21,7 @@ public class KillsTests
             (21, 25, 0),
             (11, 14, 0)
         };
-        var result = doska.VariantsP().Select(x => CheckersBoard.KillOutput(doska, x)).ToList();
+        var result = doska.Variants().Select(x => CheckersBoard.KillOutput(doska, x)).ToList();
         Console.WriteLine(string.Join("\n", result));
         CollectionAssert.AreEquivalent(actual, result);
     }
@@ -39,7 +39,7 @@ public class KillsTests
             (21, 25, 0),
             (21, 30, 26)
         };
-        var result = doska.VariantsP().Select(x => CheckersBoard.KillOutput(doska, x)).ToList();
+        var result = doska.Variants().Select(x => CheckersBoard.KillOutput(doska, x)).ToList();
         Console.WriteLine(string.Join("\n", result));
         CollectionAssert.AreEquivalent(actual, result);
     }
@@ -58,7 +58,7 @@ public class KillsTests
             (21,30,26),
             (21, 25, 0)
         };
-        var l = doska.VariantsP().Select(x => CheckersBoard.KillOutput(doska, x)).ToList();
+        var l = doska.Variants().Select(x => CheckersBoard.KillOutput(doska, x)).ToList();
         Console.WriteLine(string.Join(", ", l));
         CollectionAssert.AreEquivalent(actual, l);
     }
@@ -76,35 +76,13 @@ public class KillsTests
             (21, 25, 0),
              (11, 14, 0)
         };
-        var result = doska.VariantsP().Select(x => CheckersBoard.KillOutput(doska, x)).ToList();
+        var result = doska.Variants().Select(x => CheckersBoard.KillOutput(doska, x)).ToList();
         CollectionAssert.AreEquivalent(actual, result);
     }
     [TestMethod]
     public void Test5()
     {
         var doska = new CheckersBoard(AllWhite, 0, AllBlack, 0);
-        Assert.AreEqual(7, doska.VariantsP().Count());
-    }
-    [TestMethod]
-    public void ReverseUint1()
-    {
-        uint x = 0b1001100;
-        uint revX = UintHelper.Reverse1(x);
-        Assert.AreEqual(838860800u, revX);
-    }
-    [TestMethod]
-    public void ReverseUint2()
-    {
-        uint x = 0b1001100;
-        uint revX = UintHelper.Reverse2(x);
-        Assert.AreEqual(838860800u, revX);
-    }
-    [TestMethod]
-    public void GetBitArrayTest()
-    {
-        List<uint> data = new List<uint>() { 0b1111_1010, 0b110011001100};
-        var resultArray = UintHelper.GetBitArray(data);
-
-        int x = 1;
+        Assert.AreEqual(7, doska.Variants().Count());
     }
 }

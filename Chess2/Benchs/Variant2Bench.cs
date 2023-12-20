@@ -26,6 +26,6 @@ public class Variant2Bench
     [Benchmark]
     public void VariantsP()
     {
-        _ = Board.VariantsP().Count();
+        _ = Board.Variants().Count();
     }
 }

@@ -20,14 +20,16 @@ public record CheckersBoard(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
         return (oldPos, newPos, dead);
     };
 
-    public IEnumerable<CheckersBoard> VariantsP()
+    public CheckersBoard Reverse() => new(UintHelper.Reverse2(BlackP), UintHelper.Reverse2(BlackD), UintHelper.Reverse2(WhiteP), UintHelper.Reverse2(WhiteD));
+
+    public IEnumerable<CheckersBoard> Variants()
     {
-        foreach (var position in UintHelper.Indexes(WhiteP))
+        foreach (var position in UintHelper.Moves(WhiteP))
         {
             var variantsSteps = Masks.Steps[position];
             #region steps
             var steps = variantsSteps & ~All;
-            foreach (var step in UintHelper.Indexes(steps))
+            foreach (var step in UintHelper.Moves(steps))
             {
                 yield return new(
                     WhiteP & ~position | step,
@@ -38,13 +40,13 @@ public record CheckersBoard(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
             #endregion
 
             #region kills
-            foreach (var kill in UintHelper.Indexes(variantsSteps & Blacks))
+            foreach (var kill in UintHelper.Moves(variantsSteps & Blacks))
             {
                 var k = kill | position;
                 if (Masks.StepsByDirection.TryGetValue(k, out uint hod))
                 {
                     hod &= ~All;
-                    foreach (var step in UintHelper.Indexes(hod))
+                    foreach (var step in UintHelper.Moves(hod))
                     {
                         yield return new(
                             WhiteP & ~position | step,
