@@ -1,4 +1,4 @@
 ﻿using BenchmarkDotNet.Running;
-using Chess2.Benchs;
+using Chess2;
 
-BenchmarkRunner.Run<Variant2Bench>();
+BenchmarkRunner.Run<QueenMovesBench>();

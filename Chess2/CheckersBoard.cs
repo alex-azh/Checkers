@@ -20,6 +20,12 @@ public record CheckersBoard(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
         return (oldPos, newPos, dead);
     };
 
+    public static (int startPos, int endPos, int killedPos) GetStepByDifferenceBoards(
+        CheckersBoard prev, CheckersBoard current) =>
+        (BitOperations.Log2(prev.Whites & ~current.Whites),
+        BitOperations.Log2(current.Whites & ~prev.Whites),
+        BitOperations.Log2(prev.Blacks & ~current.Blacks));
+
     public CheckersBoard Reverse() => new(UintHelper.Reverse(BlackP), UintHelper.Reverse(BlackD), UintHelper.Reverse(WhiteP), UintHelper.Reverse(WhiteD));
     public bool[] BoolArray() => UintHelper.GetBoolArray(this);
     public IEnumerable<CheckersBoard> Variants()

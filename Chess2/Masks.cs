@@ -2,6 +2,7 @@
 
 public static class Masks
 {
+    public readonly static uint QueenPositions = UintHelper.CreateNumber(28, 29, 30, 31);
     public readonly static Dictionary<uint, uint> Steps = new()
 {
     { 0b00_00000_00000_00000_00000_00000_00001, 0b00_00000_00000_00000_00000_00000_10000 }, //0 4
@@ -33,9 +34,78 @@ public static class Masks
     { 0b00_00010_00000_00000_00000_00000_00000, 0b01_1000_000000_00000_00000_00000_00000 }, //26 29 30
     { 0b00_00100_00000_00000_00000_00000_00000, 0b11_0000_000000_00000_00000_00000_00000 } //27 30 31
 };
-    public readonly static Dictionary<uint, uint> Damki = new()
+    public readonly static Dictionary<uint, uint> StepsBackward = new()
     {
+        { UintHelper.CreateNumber(4), UintHelper.CreateNumber(0,1) },
+        { UintHelper.CreateNumber(5), UintHelper.CreateNumber(1,2) },
+        { UintHelper.CreateNumber(6), UintHelper.CreateNumber(2,3) },
+        { UintHelper.CreateNumber(7), UintHelper.CreateNumber(3) },
+        { UintHelper.CreateNumber(8), UintHelper.CreateNumber(4) },
+        { UintHelper.CreateNumber(9), UintHelper.CreateNumber(4,5) },
+        { UintHelper.CreateNumber(10), UintHelper.CreateNumber(5,6) },
+        { UintHelper.CreateNumber(11), UintHelper.CreateNumber(6,7) },
+        { UintHelper.CreateNumber(12), UintHelper.CreateNumber(8,9) },
+        { UintHelper.CreateNumber(13), UintHelper.CreateNumber(9,10) },
+        { UintHelper.CreateNumber(14), UintHelper.CreateNumber(10,11) },
+        { UintHelper.CreateNumber(15), UintHelper.CreateNumber(11) },
+        { UintHelper.CreateNumber(16), UintHelper.CreateNumber(12) },
+        { UintHelper.CreateNumber(17), UintHelper.CreateNumber(12,13) },
+        { UintHelper.CreateNumber(18), UintHelper.CreateNumber(13,14) },
+        { UintHelper.CreateNumber(19), UintHelper.CreateNumber(14,15) },
+        { UintHelper.CreateNumber(20), UintHelper.CreateNumber(16,17) },
+        { UintHelper.CreateNumber(21), UintHelper.CreateNumber(17,18) },
+        { UintHelper.CreateNumber(22), UintHelper.CreateNumber(18,19) },
+        { UintHelper.CreateNumber(23), UintHelper.CreateNumber(19) },
+        { UintHelper.CreateNumber(24), UintHelper.CreateNumber(20) },
+        { UintHelper.CreateNumber(25), UintHelper.CreateNumber(20,21) },
+        { UintHelper.CreateNumber(26), UintHelper.CreateNumber(21,22) },
+        { UintHelper.CreateNumber(27), UintHelper.CreateNumber(22,23) },
+        { UintHelper.CreateNumber(28), UintHelper.CreateNumber(24,25) },
+        { UintHelper.CreateNumber(29), UintHelper.CreateNumber(25,26) },
+        { UintHelper.CreateNumber(30), UintHelper.CreateNumber(26,27) },
+        { UintHelper.CreateNumber(31), UintHelper.CreateNumber(27) }
     };
+
+    public readonly static Dictionary<uint, uint> KillsBackward = new()
+    {
+    { UintHelper.CreateNumber(8, 4), UintHelper.CreateNumber(1)},
+    { UintHelper.CreateNumber(9, 4), UintHelper.CreateNumber(0)},
+    { UintHelper.CreateNumber(9, 5), UintHelper.CreateNumber(2)},
+    { UintHelper.CreateNumber(10, 5), UintHelper.CreateNumber(1)},
+    { UintHelper.CreateNumber(10, 6), UintHelper.CreateNumber(3)},
+    { UintHelper.CreateNumber(11, 6), UintHelper.CreateNumber(2)},
+    { UintHelper.CreateNumber(12, 9), UintHelper.CreateNumber(5)},
+    { UintHelper.CreateNumber(13, 9), UintHelper.CreateNumber(4)},
+    { UintHelper.CreateNumber(13, 10), UintHelper.CreateNumber(6)},
+    { UintHelper.CreateNumber(14, 10), UintHelper.CreateNumber(5)},
+    { UintHelper.CreateNumber(14, 11), UintHelper.CreateNumber(7)},
+    { UintHelper.CreateNumber(15, 11), UintHelper.CreateNumber(6)},
+    { UintHelper.CreateNumber(16, 12), UintHelper.CreateNumber(9)},
+    { UintHelper.CreateNumber(17, 12), UintHelper.CreateNumber(8)},
+    { UintHelper.CreateNumber(17, 13), UintHelper.CreateNumber(10)},
+    { UintHelper.CreateNumber(18, 13), UintHelper.CreateNumber(9)},
+    { UintHelper.CreateNumber(18, 14), UintHelper.CreateNumber(11)},
+    { UintHelper.CreateNumber(19, 14), UintHelper.CreateNumber(10)},
+    { UintHelper.CreateNumber(20, 17), UintHelper.CreateNumber(13)},
+    { UintHelper.CreateNumber(21, 17), UintHelper.CreateNumber(12)},
+    { UintHelper.CreateNumber(21, 18), UintHelper.CreateNumber(14)},
+    { UintHelper.CreateNumber(22, 18), UintHelper.CreateNumber(13)},
+    { UintHelper.CreateNumber(22, 19), UintHelper.CreateNumber(15)},
+    { UintHelper.CreateNumber(23, 19), UintHelper.CreateNumber(14)},
+    { UintHelper.CreateNumber(24, 20), UintHelper.CreateNumber(17)},
+    { UintHelper.CreateNumber(25, 20), UintHelper.CreateNumber(16)},
+    { UintHelper.CreateNumber(25, 21), UintHelper.CreateNumber(18)},
+    { UintHelper.CreateNumber(26, 21), UintHelper.CreateNumber(17)},
+    { UintHelper.CreateNumber(26, 22), UintHelper.CreateNumber(19)},
+    { UintHelper.CreateNumber(27, 22), UintHelper.CreateNumber(18)},
+    { UintHelper.CreateNumber(28, 25), UintHelper.CreateNumber(21)},
+    { UintHelper.CreateNumber(29, 25), UintHelper.CreateNumber(20)},
+    { UintHelper.CreateNumber(29 ,26), UintHelper.CreateNumber(22)},
+    { UintHelper.CreateNumber(30, 26), UintHelper.CreateNumber(21)},
+    { UintHelper.CreateNumber(30, 27), UintHelper.CreateNumber(23)},
+    { UintHelper.CreateNumber(31, 27), UintHelper.CreateNumber(22)},
+    };
+
     public readonly static Dictionary<uint, uint> StepsByDirection = new()
 {
     { UintHelper.CreateNumber(0, 4), UintHelper.CreateNumber(9)},
