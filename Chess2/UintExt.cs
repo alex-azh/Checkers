@@ -1,26 +1,17 @@
 ﻿namespace CheckersGame;
 
-public static class UintHelper
+public static class UintExt
 {
-    public static IEnumerable<uint> Moves(uint figuresPositions)
+    public static IEnumerable<uint> ExtractOnes(this uint board)
     {
-        while (figuresPositions > 0)
+        while (board > 0)
         {
-            uint res = figuresPositions & ~(figuresPositions - 1);
+            uint res = board & ~(board - 1);
             yield return res;
-            figuresPositions ^= res;
+            board ^= res;
         }
     }
-    public static uint CreateNumber(params int[] numbers)
-    {
-        uint result = 0;
-        foreach (int index in numbers)
-        {
-            result |= 1u << index;
-        }
-        return result;
-    }
-    public static uint Reverse(uint x)
+    public static uint Reverse(this uint x)
     {
         x = (x & 0x55555555) << 1 | (x >>> 1) & 0x55555555;  // Четные и нечетные биты поменялись местами.
         x = (x & 0x33333333) << 2 | (x >>> 2) & 0x33333333;  // Биты "перетасовываются" группами по два.
@@ -29,5 +20,4 @@ public static class UintHelper
         x = (x & 0x0000FFFF) << 16 | (x >>> 16) & 0x0000FFFF;  // Биты "перетасовываются" группами по 16.
         return x;
     }
-
 }

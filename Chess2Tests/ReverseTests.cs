@@ -1,12 +1,6 @@
-﻿using Chess2;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CheckersGame;
 
-namespace Chess2Tests
+namespace CheckersTests
 {
     [TestClass]
     public class ReverseTests
@@ -15,14 +9,11 @@ namespace Chess2Tests
         public static uint AllWhite = 0b00_00000_00000_00000_00011_11111_11111;
 
         [TestMethod]
-        public void Rev1()
+        public void Rev1Test()
         {
-            /*
-             *     00:00:00.0000561
-             *     00:00:00.0004679
-             */
-            var stop = Stopwatch.StartNew();
-            Assert.AreEqual(AllWhite, UintHelper.Reverse(AllBlack));
+            Board board = new(UintHelper.CreateNumber(0, 1, 2), 0, UintHelper.CreateNumber(20, 21), 0),
+                tested = new(UintHelper.CreateNumber(10, 11), 0, UintHelper.CreateNumber(31, 30, 29), 0);
+            Assert.AreEqual(tested, board.Reverse());
         }
     }
 }

@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Chess2\Chess2.csproj" />
+    <ProjectReference Include="..\Chess2\CheckersGame.csproj" />
   </ItemGroup>
 
 </Project>

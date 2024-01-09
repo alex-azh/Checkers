@@ -1,14 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Chess2;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BenchmarkDotNet.Running;
-using Chess2Tests.Benchmarks;
+﻿using BenchmarkDotNet.Running;
+using CheckersGame;
+using CheckersTests.Benchmarks;
 
-namespace Chess2.Tests
+namespace CheckersTests
 {
     [TestClass()]
     public class UintHelperTests
@@ -16,9 +10,9 @@ namespace Chess2.Tests
         [TestMethod()]
         public void GetBitArrayTest()
         {
-            var board = new CheckersBoard(0b01010011, 0b100, 0, 0);//0b100, 0b01001, 0b101);
-            var actual = GetBoolArrayBench.GetBoolArray(board);
-            var actual2 = UintHelper.GetBoolArray(board);
+            Board board = new Board(0b01010011, 0b100, 0, 0);//0b100, 0b01001, 0b101);
+            bool[] actual = GetBoolArrayBench.GetBoolArray(board);
+            bool[] actual2 = board.BoolArray();
             CollectionAssert.AreEqual(actual, actual2);
         }
         [TestMethod()]
