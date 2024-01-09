@@ -3,9 +3,13 @@
 namespace Chess2;
 public record CheckersBoard(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
 {
+    public static readonly uint MaskaD = UintHelper.CreateNumber(31, 30, 29, 28);
+    public bool ImPlayer { get; set; }
     public uint Whites => WhiteP | WhiteD;
     public uint Blacks => BlackP | BlackD;
     public uint All => Whites | Blacks;
+    public bool ImWin => Whites != 0 && Blacks == 0;
+    public bool CanContinue => Whites != 0 && Blacks != 0;
     public readonly static Func<CheckersBoard, CheckersBoard, (int pos, int hod)> StepOutput = (prev, next) =>
     {
         int oldPos = BitOperations.Log2(prev.Whites & ~next.Whites);
@@ -27,13 +31,13 @@ public record CheckersBoard(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
         foreach (var position in UintHelper.Moves(WhiteP))
         {
             var variantsSteps = Masks.Steps[position];
-            #region steps
-            var steps = variantsSteps & ~All;
-            foreach (var step in UintHelper.Moves(steps))
+            #region steps 
+            // variantsSteps & ~All чтобы не было другой 
+            foreach (var step in UintHelper.Moves(variantsSteps & ~All))
             {
                 yield return new(
-                    WhiteP & ~position | step,
-                    WhiteD,
+                    WhiteP & ~position | (step & MaskaD),
+                    WhiteD | (step & MaskaD),
                     BlackP,
                     BlackD);
             }
@@ -42,15 +46,13 @@ public record CheckersBoard(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
             #region kills
             foreach (var kill in UintHelper.Moves(variantsSteps & Blacks))
             {
-                var k = kill | position;
-                if (Masks.StepsByDirection.TryGetValue(k, out uint hod))
+                if (Masks.StepsByDirection.TryGetValue(kill | position, out uint hod))
                 {
-                    hod &= ~All;
-                    foreach (var step in UintHelper.Moves(hod))
+                    foreach (var step in UintHelper.Moves(hod & ~All))
                     {
                         yield return new(
-                            WhiteP & ~position | step,
-                            WhiteD,
+                            WhiteP & ~position | (step & MaskaD),
+                            WhiteD | (step & MaskaD),
                             BlackP & ~kill,
                             BlackD & ~kill
                             );
@@ -59,60 +61,6 @@ public record CheckersBoard(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
             }
             #endregion
         }
+        // TODO: сделать ходы дамок
     }
-
-    // TODO: сделать VariantsD();
-
-    #region Obsolete
-    //[Obsolete]
-    //public IEnumerable<CheckerBoard> Variants_old()
-    //{
-    //    return WhitePVariants_old().Concat(WhitePKills_old());
-    //}
-    //[Obsolete]
-    //public IEnumerable<CheckerBoard> WhitePVariants_old()
-    //{
-    //    foreach (uint position in UintHelper.Indexes(WhiteP))
-    //    {
-    //        // ход пешки
-    //        uint maska = Masks.Forward[position] & ~All;
-    //        foreach (var hod in UintHelper.Indexes(maska))
-    //        {
-    //            yield return new(
-    //                WhiteP & ~position | hod,
-    //                WhiteD,
-    //                BlackP,
-    //                BlackD);
-    //        }
-    //    }
-    //}
-    //[Obsolete]
-    //public IEnumerable<CheckerBoard> WhitePKills_old()
-    //{
-    //    foreach (uint position in UintHelper.Indexes(WhiteP))
-    //    {
-    //        if (Masks.ForwardKill.TryGetValue(position, out uint maskaHodov))
-    //        {
-    //            maskaHodov &= ~All;
-    //            foreach (var hod in UintHelper.Indexes(maskaHodov))
-    //            {
-    //                int logPos = BitOperations.Log2(position),
-    //                    delta = BitOperations.Log2(hod) - logPos,
-    //                    ryad = logPos / 4;
-    //                Func<uint, int, uint> funcForSearchDeletedPos = Masks.Delta[delta];
-    //                uint deletedPosition = funcForSearchDeletedPos(position, ryad);
-    //                if ((deletedPosition & Blacks) != 0)
-    //                {
-    //                    yield return new(
-    //                        WhiteP & ~position | hod,
-    //                        WhiteD,
-    //                        BlackP & ~deletedPosition,
-    //                        BlackD & ~deletedPosition
-    //                        );
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
-    #endregion
 }

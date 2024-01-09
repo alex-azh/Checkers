@@ -13,9 +13,9 @@ public static class UintHelper
     public static uint CreateNumber(params int[] numbers)
     {
         uint result = 0;
-        foreach (var x in numbers)
+        foreach (var index in numbers)
         {
-            result |= 1u << x;
+            result |= 1u << index;
         }
         return result;
     }
@@ -40,4 +40,7 @@ public static class UintHelper
         }
         return result;
     }
+
+    public static uint AllBlack = 0b11_11111_11111_00000_00000_00000_00000;
+    public static uint AllWhite = 0b00_00000_00000_00000_00011_11111_11111;
 }
