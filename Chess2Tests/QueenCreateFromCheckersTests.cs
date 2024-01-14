@@ -13,9 +13,14 @@ public class QueenCreateFromCheckersTests
         int[] collection = b.Moves().Select(x => BitOperations.Log2(x.WhiteD)).Distinct().ToArray();
         int[] values = { 28, 29, 30, 31 };
         CollectionAssert.AreEquivalent(values, collection);
+        // var moves = from board in b.Moves()
+        //             let before = b.Whites.IndexesOfOnesPositions().ToList()
+        //             let checkers = board.WhiteP.IndexesOfOnesPositions().ToList()
+        //             let queens = board.WhiteD.IndexesOfOnesPositions().ToList()
+        //             select new { checkers, queens, before };
     }
     [TestMethod]
-    public void Test2()
+    public void QueenMaskFunctionTest()
     {
         uint mask = UintHelper.CreateNumber(28, 29, 30, 31),
             x26 = UintHelper.CreateNumber(26),
@@ -34,7 +39,7 @@ public class QueenCreateFromCheckersTests
         int f(uint x) => BitOperations.Log2((mask ^ x) & x);
     }
     [TestMethod]
-    public void Test3()
+    public void QueenMaskFunctionTest2()
     {
         uint mask = UintHelper.CreateNumber(28, 29, 30, 31),
             x26 = UintHelper.CreateNumber(26),
