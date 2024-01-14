@@ -20,4 +20,7 @@ public static class UintExt
         x = (x & 0x0000FFFF) << 16 | (x >>> 16) & 0x0000FFFF;  // Биты "перетасовываются" группами по 16.
         return x;
     }
+    public static IEnumerable<uint> IndexesOfOnesPositions(this uint figures)
+    => from figure in figures.ExtractOnes()
+       select uint.Log2(figure);
 }

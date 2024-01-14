@@ -6,6 +6,7 @@ public record Board(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
 {
     public static uint StartWhites => 0b00_00000_00000_00000_00011_11111_11111;
     public static uint StartBlacks => 0b11_11111_11111_00000_00000_00000_00000;
+    public static Board NewBoard() => new(StartWhites, 0, StartBlacks, 0);
     public bool ImPlayer { get; set; }
     public uint Whites => WhiteP | WhiteD;
     public uint Blacks => BlackP | BlackD;
@@ -26,6 +27,17 @@ public record Board(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
         foreach (Board board in Queen.Moves(this))
         {
             yield return board;
+        }
+    }
+    public IEnumerable<(Board board, bool deletedFigure)> Moves2()
+    {
+        foreach (Board board in Checkers.Moves(this))
+        {
+            yield return (board, false);
+        }
+        foreach (Board board in Queen.Moves(this))
+        {
+            yield return (board, false);
         }
     }
 

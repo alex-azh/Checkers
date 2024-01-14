@@ -10,8 +10,8 @@ public static class Checkers
             foreach (uint step in (Masks.Steps[position] & ~board.All).ExtractOnes())
             {
                 yield return new(
-                    board.WhiteP & ~position | ~Masks.QueenPositions & step,
-                    board.WhiteD | step & Masks.QueenPositions,
+                    board.WhiteP & ~position | (~Masks.QueenPositions & step),
+                    board.WhiteD | (step & Masks.QueenPositions),
                     board.BlackP,
                     board.BlackD);
             }
@@ -25,8 +25,8 @@ public static class Checkers
                     foreach (uint step in (hod & ~board.All).ExtractOnes())
                     {
                         yield return new(
-                            board.WhiteP & ~position | ~Masks.QueenPositions & step,
-                            board.WhiteD | step & Masks.QueenPositions,
+                            board.WhiteP & ~position | (~Masks.QueenPositions & step),
+                            board.WhiteD | (step & Masks.QueenPositions),
                             board.BlackP & ~kill,
                             board.BlackD & ~kill
                             );
