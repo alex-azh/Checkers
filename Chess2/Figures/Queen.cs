@@ -2,19 +2,22 @@
 
 public static class Queen
 {
-    public static IEnumerable<Board> Moves(Board board)
+    public static IEnumerable<(Board board, bool hasKill)> Moves(Board board)
     {
         foreach (uint position in board.WhiteD.ExtractOnes())
         {
             #region Forward
+
             #region steps
             Masks.Steps.TryGetValue(position, out uint variant);
             foreach (uint newPosition in (variant & ~board.All).ExtractOnes())
             {
-                yield return board with
-                {
-                    WhiteD = board.WhiteD & ~position | newPosition
-                };
+                yield return (
+                    board: board with
+                    {
+                        WhiteD = board.WhiteD & ~position | newPosition
+                    },
+                hasKill: false);
             }
             #endregion steps
 
@@ -24,26 +27,32 @@ public static class Queen
                 Masks.StepsByDirection.TryGetValue(killedFigurePosition | position, out uint stepPos);
                 foreach (uint newPosition in (stepPos & ~board.All).ExtractOnes())
                 {
-                    yield return board with
-                    {
-                        WhiteD = board.WhiteD & ~position | newPosition,
-                        BlackP = board.BlackP & ~killedFigurePosition,
-                        BlackD = board.BlackD & ~killedFigurePosition
-                    };
+                    yield return (
+                        board: board with
+                        {
+                            WhiteD = board.WhiteD & ~position | newPosition,
+                            BlackP = board.BlackP & ~killedFigurePosition,
+                            BlackD = board.BlackD & ~killedFigurePosition
+                        },
+                    hasKill: true);
                 }
             }
             #endregion kills
+
             #endregion Forward
 
             #region Backward
+
             #region steps
             Masks.StepsBackward.TryGetValue(position, out uint backwardSteps);
             foreach (uint newPosition in (backwardSteps & ~board.All).ExtractOnes())
             {
-                yield return board with
-                {
-                    WhiteD = board.WhiteD & ~position | newPosition
-                };
+                yield return (
+                     board: board with
+                     {
+                         WhiteD = board.WhiteD & ~position | newPosition
+                     },
+                 hasKill: false);
             }
             #endregion steps
 
@@ -53,15 +62,18 @@ public static class Queen
                 Masks.KillsBackward.TryGetValue(killedFigurePosition | position, out uint stepPos);
                 foreach (uint newPosition in (stepPos & ~board.All).ExtractOnes())
                 {
-                    yield return board with
-                    {
-                        WhiteD = board.WhiteD & ~position | newPosition,
-                        BlackP = board.BlackP & ~killedFigurePosition,
-                        BlackD = board.BlackD & ~killedFigurePosition
-                    };
+                    yield return (
+                        board: board with
+                        {
+                            WhiteD = board.WhiteD & ~position | newPosition,
+                            BlackP = board.BlackP & ~killedFigurePosition,
+                            BlackD = board.BlackD & ~killedFigurePosition
+                        },
+                    hasKill: true);
                 }
             }
             #endregion kills
+
             #endregion Backward
         }
     }

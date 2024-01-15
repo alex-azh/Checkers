@@ -11,33 +11,20 @@ public record Board(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
     public uint Whites => WhiteP | WhiteD;
     public uint Blacks => BlackP | BlackD;
     public uint All => Whites | Blacks;
-    public bool ImWin => Whites != 0 && Blacks == 0;
-    public bool CanContinue => Moves().Any();
 
     /// <summary>
     /// Всевозможные ходы от текущего игрока <see cref="ImPlayer"/>.
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<Board> Moves()
+    public IEnumerable<(Board board, bool hasKill)> Moves()
     {
-        foreach (Board board in Checkers.Moves(this))
+        foreach (var result in Checkers.Moves(this))
         {
-            yield return board;
+            yield return result;
         }
-        foreach (Board board in Queen.Moves(this))
+        foreach (var result in Queen.Moves(this))
         {
-            yield return board;
-        }
-    }
-    public IEnumerable<(Board board, bool deletedFigure)> Moves2()
-    {
-        foreach (Board board in Checkers.Moves(this))
-        {
-            yield return (board, false);
-        }
-        foreach (Board board in Queen.Moves(this))
-        {
-            yield return (board, false);
+            yield return result;
         }
     }
 

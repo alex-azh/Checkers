@@ -10,7 +10,7 @@ public class QueenCreateFromCheckersTests
     public void Test1()
     {
         Board b = new(UintHelper.CreateNumber(24, 25, 26, 27), 0, 0, 0);
-        int[] collection = b.Moves().Select(x => BitOperations.Log2(x.WhiteD)).Distinct().ToArray();
+        int[] collection = b.Moves().Select(x => BitOperations.Log2(x.board.WhiteD)).Distinct().ToArray();
         int[] values = { 28, 29, 30, 31 };
         CollectionAssert.AreEquivalent(values, collection);
         // var moves = from board in b.Moves()

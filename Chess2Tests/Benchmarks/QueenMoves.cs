@@ -7,7 +7,7 @@ using CheckersGame;
 [TestClass]
 public class QueenMovesBenchTests
 {
-    [TestMethod]
+    //[TestMethod]
     public void Run()
     {
         BenchmarkRunner.Run<ReverseBench>();
