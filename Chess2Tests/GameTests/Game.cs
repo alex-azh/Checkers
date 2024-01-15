@@ -24,6 +24,13 @@ public class Game(IPlayer whitePlayer, IPlayer blackPlayer)
     {
         { whitePlayer, blackPlayer }, { blackPlayer, whitePlayer }
     };
+    public delegate void DisplayBoardHandler(Board board);
+    private DisplayBoardHandler? _display;
+    public void RegisterDisplayHandler(DisplayBoardHandler handler)
+    {
+        _display += handler;
+    }
+    public void UnRegisterDisplayHandler(DisplayBoardHandler handler) => _display -= handler;
     public Board CheckersBoard { get; private set; } = Board.NewBoard();
     public ushort MovesWhithoutKillsCount { get; set; } = 0;
     public bool GameContinue => MovesWhithoutKillsCount < 50 && CheckersBoard.Moves().Any();
@@ -31,9 +38,11 @@ public class Game(IPlayer whitePlayer, IPlayer blackPlayer)
     public bool Reversed { get; private set; } = false;
     public IEnumerable<Board> Start()
     {
+        _display?.Invoke(CheckersBoard);
         while (GameContinue)
         {
             (Board board, bool wasDeletedFigure) = LastPlayer.Move(CheckersBoard);
+            _display?.Invoke(CheckersBoard);
             yield return board;
             if (wasDeletedFigure)
             {
