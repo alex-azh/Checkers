@@ -1,22 +1,5 @@
-﻿using CheckersGame;
+﻿namespace CheckersGame.GameSpace;
 
-namespace CheckersTests;
-
-public interface IInputMove
-{
-    (int fromPosition, int toPosition) Input();
-    void SendBadMoveInformation();
-}
-
-public sealed class ComputerPlayer : IPlayer
-{
-    public (Board board, bool changedPlayer) Move(Board board)
-    {
-
-        var list = board.Moves().ToList();
-        return list[new Random().Next(list.Count)];
-    }
-}
 
 public class Game(IPlayer whitePlayer, IPlayer blackPlayer)
 {
@@ -24,25 +7,18 @@ public class Game(IPlayer whitePlayer, IPlayer blackPlayer)
     {
         { whitePlayer, blackPlayer }, { blackPlayer, whitePlayer }
     };
-    public delegate void DisplayBoardHandler(Board board);
-    private DisplayBoardHandler? _display;
-    public void RegisterDisplayHandler(DisplayBoardHandler handler)
-    {
-        _display += handler;
-    }
-    public void UnRegisterDisplayHandler(DisplayBoardHandler handler) => _display -= handler;
     public Board CheckersBoard { get; private set; } = Board.NewBoard();
     public ushort MovesWhithoutKillsCount { get; set; } = 0;
     public bool GameContinue => MovesWhithoutKillsCount < 50 && CheckersBoard.Moves().Any();
     public IPlayer LastPlayer { get; private set; } = whitePlayer;
     public bool Reversed { get; private set; } = false;
-    public IEnumerable<Board> Start()
+    public IEnumerable<Board> Start(IDisplayBoard display)
     {
-        _display?.Invoke(CheckersBoard);
+        display.Show(CheckersBoard);
         while (GameContinue)
         {
             (Board board, bool wasDeletedFigure) = LastPlayer.Move(CheckersBoard);
-            _display?.Invoke(CheckersBoard);
+            display.Show(CheckersBoard);
             yield return board;
             if (wasDeletedFigure)
             {
@@ -53,6 +29,27 @@ public class Game(IPlayer whitePlayer, IPlayer blackPlayer)
             {
                 CheckersBoard = board.Reverse();
                 Reversed = true;
+                LastPlayer = Opponents[LastPlayer];
+                MovesWhithoutKillsCount++;
+            }
+        }
+    }
+    public IEnumerable<(Board board, bool reversed)> Start()
+    {
+        while (GameContinue)
+        {
+            (Board board, bool wasDeletedFigure) = LastPlayer.Move(CheckersBoard);
+            yield return (board, Reversed);
+            if (wasDeletedFigure)
+            {
+                CheckersBoard = board;
+                MovesWhithoutKillsCount = 0;
+                Reversed = false | Reversed;
+            }
+            else
+            {
+                CheckersBoard = board.Reverse();
+                Reversed = true; //TODO: реверсить доску на Show 
                 LastPlayer = Opponents[LastPlayer];
                 MovesWhithoutKillsCount++;
             }

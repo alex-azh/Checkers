@@ -1,10 +1,6 @@
 ﻿using CheckersGame;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CheckersGame.GameSpace;
 
 namespace CheckersTests.GameTests
 {
@@ -16,16 +12,18 @@ namespace CheckersTests.GameTests
         {
             ComputerPlayer p1 = new(), p2 = new();
             var game = new Game(p1, p2);
-            IEnumerable<Board> result = game.Start();
-            int cnt = 0;
-            foreach (var b in result)
-            {
-                string whitePoses = string.Join(",", b.Whites.IndexesOfOnesPositions());
-                string blacksPoses = string.Join(",", b.Blacks.IndexesOfOnesPositions());
-                cnt++;
-            };
-            Debug.WriteLine(cnt);
-            Debug.WriteLine(game.MovesWhithoutKillsCount);
+            IEnumerable<(Board board, bool reversed)> result = game.Start();
+            var moves3 = result.Take(3).ToList();
+            var first = moves3[0]; //white сходил
+            (int fromPos, int toPos, int killedPos) m1 = Board.WhoMoved(Board.NewBoard(), moves3[0].board);
+            var second = moves3[1]; //черный сходил (реверснута)
+            Assert.AreEqual(first.board.Whites, second.board.Reverse().Whites);
+            var three = moves3[2]; // white сходил
+            Assert.AreEqual(second.board.Reverse().Blacks, three.board.Blacks);
+            //(int fromPos, int toPos, int killedPos) m2 = Board.WhoMoved(moves3[1].board, moves3[2].board);
+
+            //Debug.WriteLine(cnt);
+            //Debug.WriteLine(game.MovesWhithoutKillsCount);
         }
     }
 }

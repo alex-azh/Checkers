@@ -1,6 +1,4 @@
-﻿using CheckersGame;
-
-namespace CheckersTests;
+﻿namespace CheckersGame.GameSpace;
 
 public sealed class HumanPlayer : IPlayer
 {

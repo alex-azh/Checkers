@@ -1,6 +1,6 @@
 ﻿using CheckersGame;
 
-namespace CheckersTests;
+namespace CheckersGame.GameSpace;
 
 public interface IPlayer
 {
