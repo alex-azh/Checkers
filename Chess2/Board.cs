@@ -28,12 +28,16 @@ public record Board(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
         }
     }
 
-    public static (int fromPos, int toPos, int killedPos) WhoMoved(Board prev, Board current) =>
+    public static (int fromPos, int toPos, int deletedPos) WhoMovedWhites(Board prev, Board current) =>
         (BitOperations.Log2(prev.Whites & ~current.Whites),
         BitOperations.Log2(current.Whites & ~prev.Whites),
         BitOperations.Log2(prev.Blacks & ~current.Blacks));
+    public static (int fromPos, int toPos, int deletedPos) WhoMovedBlacks(Board prev, Board current) =>
+        (BitOperations.Log2(prev.Blacks & ~current.Blacks),
+        BitOperations.Log2(current.Blacks & ~prev.Blacks),
+        BitOperations.Log2(prev.Whites & ~current.Whites));
 
-    public Board Reverse() => new(BlackP.Reverse(), BlackD.Reverse(), WhiteP.Reverse(), WhiteD.Reverse());
+    public Board Flip() => new(BlackP.Reverse(), BlackD.Reverse(), WhiteP.Reverse(), WhiteD.Reverse());
     public bool[] BoolArray()
     {
         bool[] result = new bool[128];

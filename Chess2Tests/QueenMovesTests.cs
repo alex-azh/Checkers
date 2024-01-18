@@ -12,7 +12,7 @@ public class QueenMovesTests
     {
         Board board = new(0, UintHelper.CreateNumber(0, 1, 18), UintHelper.CreateNumber(4, 8, 5, 22), 0);
         List<(int fromPos, int toPos, int killedPos)> results = (from b in Queen.Moves(board)
-                                                                 select Board.WhoMoved(board, b.board))
+                                                                 select Board.WhoMovedWhites(board, b.board))
                        .ToList();
         List<(int, int, int)> expected = new()
         {
@@ -31,7 +31,7 @@ public class QueenMovesTests
     {
         Board board = new(0, UintHelper.CreateNumber(20, 24, 19, 16), 0, 0);
         List<(int fromPos, int toPos, int killedPos)> results = (from b in Queen.Moves(board)
-                                                                 select Board.WhoMoved(board, b.board))
+                                                                 select Board.WhoMovedWhites(board, b.board))
                        .ToList();
         List<(int, int, int)> expected = new()
         {
@@ -52,7 +52,7 @@ public class QueenMovesTests
     {
         Board board = new(0, UintHelper.CreateNumber(31, 16, 2), 0, UintHelper.CreateNumber(27, 5, 25, 12, 20, 9, 6, 11));
         List<(int fromPos, int toPos, int killedPos)> results = (from b in Queen.Moves(board)
-                                                                 select Board.WhoMoved(board, b.board))
+                                                                 select Board.WhoMovedWhites(board, b.board))
                        .ToList();
         List<(int, int, int)> expected = new()
         {

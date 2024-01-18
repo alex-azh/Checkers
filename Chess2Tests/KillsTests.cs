@@ -21,7 +21,7 @@ public class KillsTests
             (21, 25, 0),
             (11, 14, 0)
         };
-        List<(int pos, int hod, int dead)> result = doska.Moves().Select(x => Board.WhoMoved(doska, x.board)).ToList();
+        List<(int pos, int hod, int dead)> result = doska.Moves().Select(x => Board.WhoMovedWhites(doska, x.board)).ToList();
         Console.WriteLine(string.Join("\n", result));
         CollectionAssert.AreEquivalent(actual, result);
     }
@@ -39,7 +39,7 @@ public class KillsTests
             (21, 25, 0),
             (21, 30, 26)
         };
-        List<(int fromPos, int toPos, int killedPos)> result = doska.Moves().Select(x => Board.WhoMoved(doska, x.board)).ToList();
+        List<(int fromPos, int toPos, int killedPos)> result = doska.Moves().Select(x => Board.WhoMovedWhites(doska, x.board)).ToList();
         Console.WriteLine(string.Join("\n", result));
         CollectionAssert.AreEquivalent(actual, result);
     }
@@ -58,7 +58,7 @@ public class KillsTests
             (21,30,26),
             (21, 25, 0)
         };
-        List<(int fromPos, int toPos, int killedPos)> l = doska.Moves().Select(x => Board.WhoMoved(doska, x.board)).ToList();
+        List<(int fromPos, int toPos, int killedPos)> l = doska.Moves().Select(x => Board.WhoMovedWhites(doska, x.board)).ToList();
         Console.WriteLine(string.Join(", ", l));
         CollectionAssert.AreEquivalent(actual, l);
     }
@@ -76,7 +76,7 @@ public class KillsTests
             (21, 25, 0),
              (11, 14, 0)
         };
-        List<(int fromPos, int toPos, int killedPos)> result = doska.Moves().Select(x => Board.WhoMoved(doska, x.board)).ToList();
+        List<(int fromPos, int toPos, int killedPos)> result = doska.Moves().Select(x => Board.WhoMovedWhites(doska, x.board)).ToList();
         CollectionAssert.AreEquivalent(actual, result);
     }
     [TestMethod]

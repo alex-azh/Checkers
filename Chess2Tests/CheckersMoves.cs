@@ -14,7 +14,7 @@ public class CheckersMoves
         Assert.AreEqual(6, moves.Count);
         (int fromPos, int toPos)[] actual = moves.Select(x =>
         {
-            var (fromPos, toPos, killedPos) = Board.WhoMoved(b, x.board);
+            var (fromPos, toPos, killedPos) = Board.WhoMovedWhites(b, x.board);
             return (fromPos, toPos);
         }).ToArray();
         (int, int)[] exp =
@@ -27,7 +27,7 @@ public class CheckersMoves
     public void Test2()
     {
         Board b = new(UintHelper.CreateNumber(24, 16), 0, 0, 0);
-        var actual = b.Moves().Select(x => Board.WhoMoved(b, x.board));
+        var actual = b.Moves().Select(x => Board.WhoMovedWhites(b, x.board));
         (int, int, int)[] exp = { (24, 28, 0), (16, 20, 0) };
         CollectionAssert.AreEquivalent(exp, actual.ToArray());
     }

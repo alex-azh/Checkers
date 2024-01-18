@@ -15,7 +15,7 @@ namespace CheckersTests
         {
             Board board = new(UintHelper.CreateNumber(0, 1, 2), 0, UintHelper.CreateNumber(20, 21), 0),
                 tested = new(UintHelper.CreateNumber(10, 11), 0, UintHelper.CreateNumber(31, 30, 29), 0);
-            Assert.AreEqual(tested, board.Reverse());
+            Assert.AreEqual(tested, board.Flip());
         }
         [TestMethod]
         public void Rev2Test()

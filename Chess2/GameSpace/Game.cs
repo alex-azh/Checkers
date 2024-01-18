@@ -27,7 +27,7 @@ public class Game(IPlayer whitePlayer, IPlayer blackPlayer)
             }
             else
             {
-                CheckersBoard = board.Reverse();
+                CheckersBoard = board.Flip();
                 Reversed = true;
                 LastPlayer = Opponents[LastPlayer];
                 MovesWhithoutKillsCount++;
@@ -48,8 +48,8 @@ public class Game(IPlayer whitePlayer, IPlayer blackPlayer)
             }
             else
             {
-                CheckersBoard = board.Reverse();
-                Reversed = true; //TODO: реверсить доску на Show 
+                CheckersBoard = board.Flip();
+                Reversed = !Reversed;
                 LastPlayer = Opponents[LastPlayer];
                 MovesWhithoutKillsCount++;
             }

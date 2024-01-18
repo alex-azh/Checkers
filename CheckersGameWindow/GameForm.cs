@@ -3,10 +3,23 @@ using CheckersGame.GameSpace;
 
 namespace CheckersGameWindow
 {
+    public static class ColorsPallete
+    {
+        public static Color Cell = Color.DarkGray;
+        public static Color WhiteCell = Color.White;
+        public static Color DeletedFigure = Color.DarkRed;
+        public static Color StartPosition = Color.DarkBlue;
+        public static Color EndPosition = Color.Blue;
+        public static Color Black = Color.Black;
+        public static Color White = Color.White;
+    }
     public partial class GameForm : Form
     {
         List<Button> btns = new();
-        IEnumerable<(Board, bool)> _moves;
+        IEnumerator<(Board, bool)> _moves;
+        Board _lastBoard;
+        List<Button> _lightsBtns = new();
+
         public GameForm()
         {
             InitializeComponent();
@@ -16,7 +29,7 @@ namespace CheckersGameWindow
             int top = 350;
             int left = 10;
             int btnSize = 50;
-            Dictionary<Color, Color> colors = new() { { Color.DarkGray, Color.White }, { Color.White, Color.DarkGray } };
+            Dictionary<Color, Color> colors = new() { { ColorsPallete.Cell, ColorsPallete.WhiteCell }, { ColorsPallete.WhiteCell, ColorsPallete.Cell } };
             Color lastColor = Color.DarkGray;
             int tabIndex = 0;
             for (int i = 0; i < 8; i++)
@@ -34,7 +47,7 @@ namespace CheckersGameWindow
                         Enabled = false,
                         TabIndex = int.MaxValue
                     };
-                    if (lastColor == Color.DarkGray)
+                    if (lastColor == ColorsPallete.Cell)
                     {
                         button.TabIndex = tabIndex++;
                         button.Enabled = true;
@@ -61,22 +74,48 @@ namespace CheckersGameWindow
             foreach (int index in board.WhiteP.IndexesOfOnesPositions())
             {
                 btns[index].Text = "C";
-                btns[index].ForeColor = Color.White;
+                btns[index].ForeColor = ColorsPallete.White;
             }
             foreach (int index in board.WhiteD.IndexesOfOnesPositions())
             {
                 btns[index].Text = "Q";
-                btns[index].ForeColor = Color.White;
+                btns[index].ForeColor = ColorsPallete.White;
             }
             foreach (int index in board.BlackP.IndexesOfOnesPositions())
             {
                 btns[index].Text = "C";
-                btns[index].ForeColor = Color.Black;
+                btns[index].ForeColor = ColorsPallete.Black;
             }
             foreach (int index in board.BlackD.IndexesOfOnesPositions())
             {
                 btns[index].Text = "Q";
-                btns[index].ForeColor = Color.Black;
+                btns[index].ForeColor = ColorsPallete.Black;
+            }
+        }
+        void ChangeBoard(int fromPos, int toPos, int deletedPos)
+        {
+            UpdateLightsBtns();
+            btns[toPos].Text = (toPos > 27 || toPos < 4) ? "Q" : btns[fromPos].Text;
+            btns[toPos].ForeColor = btns[fromPos].ForeColor;
+            btns[fromPos].Text = string.Empty;
+            btns[fromPos].BackColor = Color.DarkBlue;
+            btns[toPos].BackColor = Color.Blue;
+
+            if (deletedPos > 0)
+            {
+                btns[deletedPos].Text = string.Empty;
+                btns[deletedPos].BackColor = Color.DarkRed;
+                _lightsBtns.Add(btns[deletedPos]);
+            }
+            _lightsBtns.Add(btns[toPos]);
+            _lightsBtns.Add(btns[fromPos]);
+            void UpdateLightsBtns()
+            {
+                foreach (Button btn in _lightsBtns)
+                {
+                    btn.BackColor = ColorsPallete.Cell;
+                }
+                _lightsBtns.Clear();
             }
         }
         private async void Form1_Load(object sender, EventArgs e)
@@ -84,7 +123,8 @@ namespace CheckersGameWindow
             InitBoard();
             Game game = new Game(new ComputerPlayer(), new ComputerPlayer());
             ShowBoard(game.CheckersBoard);
-            _moves = game.Start();
+            _lastBoard = game.CheckersBoard;
+            _moves = game.Start().GetEnumerator();
             //foreach ((Board board, bool reversed) in game.Start())
             //{
             //    await Task.Delay(1200);
@@ -95,14 +135,27 @@ namespace CheckersGameWindow
 
         private async void button1_Click(object sender, EventArgs e)
         {
-            var enumerator = _moves.GetEnumerator();
-            if (enumerator.MoveNext())
+
+            if (_moves.MoveNext())
             {
-                // 9- 12 white
-                (Board board, bool reversed) = enumerator.Current;
-                string whitePoses = string.Join(",", board.Whites.IndexesOfOnesPositions());
-                string blacksPoses = string.Join(",", board.Blacks.IndexesOfOnesPositions());
-                ShowBoard(reversed ? board.Reverse() : board);
+                (Board board, bool reversed) = _moves.Current;
+                // _lastBoard не реверснута!
+                if (reversed)
+                {
+                    Board presentedBoard = board.Flip();
+                    // ходил противник
+                    (int fromPos, int toPos, int deletedPos) = Board.WhoMovedBlacks(_lastBoard, presentedBoard);
+                    ChangeBoard(fromPos, toPos, deletedPos);
+                    _lastBoard = presentedBoard;
+                }
+                else
+                {
+                    Board presentedBoard = board;
+                    // ходил белый игрок
+                    (int fromPos, int toPos, int deletedPos) = Board.WhoMovedWhites(_lastBoard, presentedBoard);
+                    ChangeBoard(fromPos, toPos, deletedPos);
+                    _lastBoard = presentedBoard;
+                }
             }
         }
     }
