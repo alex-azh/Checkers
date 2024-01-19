@@ -88,8 +88,8 @@ public partial class GameForm : Form
         btns[toPos].Text = (toPos > 27 || toPos < 4) ? "Q" : btns[fromPos].Text;
         btns[toPos].ForeColor = btns[fromPos].ForeColor;
         btns[fromPos].Text = string.Empty;
-        btns[fromPos].BackColor = Color.DarkBlue;
-        btns[toPos].BackColor = Color.Blue;
+        btns[fromPos].BackColor = ColorsPallete.StartPosition;
+        btns[toPos].BackColor = ColorsPallete.EndPosition;
 
         if (deletedPos > 0)
         {
@@ -125,7 +125,6 @@ public partial class GameForm : Form
 
     private async void button1_Click(object sender, EventArgs e)
     {
-
         if (_moves.MoveNext())
         {
             (Board board, bool reversed) = _moves.Current;
