@@ -38,17 +38,18 @@ public class Game(IPlayer whitePlayer, IPlayer blackPlayer)
     {
         while (GameContinue)
         {
-            (Board board, bool wasDeletedFigure) = LastPlayer.Move(CheckersBoard);
-            yield return (board, Reversed);
-            if (wasDeletedFigure)
+            var move = CheckersBoard.GetBestMove(0.001f).board;
+            //(Board board, bool wasDeletedFigure) = LastPlayer.Move(CheckersBoard);
+            yield return (move, Reversed);
+            if (move.Blacks != CheckersBoard.Blacks)
             {
-                CheckersBoard = board;
+                CheckersBoard = move;
                 MovesWhithoutKillsCount = 0;
                 Reversed = false | Reversed;
             }
             else
             {
-                CheckersBoard = board.Flip();
+                CheckersBoard = move.Flip();
                 Reversed = !Reversed;
                 LastPlayer = Opponents[LastPlayer];
                 MovesWhithoutKillsCount++;

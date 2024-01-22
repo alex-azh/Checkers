@@ -1,6 +1,4 @@
-﻿using CheckersGame;
-
-namespace CheckersGame.GameSpace;
+﻿namespace CheckersGame.GameSpace;
 
 public interface IPlayer
 {
@@ -9,5 +7,5 @@ public interface IPlayer
     /// </summary>
     /// <param name="board"></param>
     /// <returns></returns>
-    (Board board, bool changedPlayer) Move(Board board);
+    Board Move(Board board);
 }

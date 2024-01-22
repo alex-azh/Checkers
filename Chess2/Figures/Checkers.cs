@@ -2,20 +2,18 @@
 
 public static class Checkers
 {
-    public static IEnumerable<(Board board, bool hasKill)> Moves(Board board)
+    public static IEnumerable<Board> Moves(Board board)
     {
         foreach (uint position in board.WhiteP.ExtractOnes())
         {
             #region steps 
             foreach (uint step in (Masks.Steps[position] & ~board.All).ExtractOnes())
             {
-                yield return (
-                    board: new(
+                yield return new(
                     board.WhiteP & ~position | (~Masks.QueenPositions & step),
                     board.WhiteD | (step & Masks.QueenPositions),
                     board.BlackP,
-                    board.BlackD),
-                    hasKill: false);
+                    board.BlackD);
             }
             #endregion
 
@@ -26,14 +24,11 @@ public static class Checkers
                 {
                     foreach (uint step in (hod & ~board.All).ExtractOnes())
                     {
-                        yield return (
-                            board: new(
+                        yield return new(
                             board.WhiteP & ~position | (~Masks.QueenPositions & step),
                             board.WhiteD | (step & Masks.QueenPositions),
                             board.BlackP & ~kill,
-                            board.BlackD & ~kill
-                            ),
-                            hasKill: true);
+                            board.BlackD & ~kill);
                     }
                 }
             }

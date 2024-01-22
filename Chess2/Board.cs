@@ -1,4 +1,5 @@
 ﻿using CheckersGame.Figures;
+using CheckersGame.GameSpace;
 using System.Numerics;
 
 namespace CheckersGame;
@@ -18,7 +19,7 @@ public record Board(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
     /// Всевозможные ходы от текущего игрока <see cref="ImPlayer"/>.
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<(Board board, bool hasKill)> Moves()
+    public IEnumerable<Board> Moves()
     {
         foreach (var result in Checkers.Moves(this))
         {
@@ -52,68 +53,35 @@ public record Board(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
         }
         return result;
     }
-
-    public (Board board, float mark) GetBestMove(float depth)
+    public IEnumerable<(Board board, float mark)> GetBestAndRndMoves(IEvaluater evaluater)
     {
-        (Board rBoard, float mark) best = GetBestAndRndMoves(countBestMoves).Select(board =>
-        {
-            var moves = board.board.Flip().GetBestAndRndMoves(countBestMoves).ToList();
-            var amount = moves.Count;
-            //в оригинале было так: (т.е. возвращалось ((board, mark), mark) )
-            //return (board, mark: board.board.Flip().GetBestAndRndMoves(countBestMoves)
-            return (board.board, mark: moves
-            .Select(rBoard => depth > depthFactor ? rBoard.board.GetBestMove(depth / amount).mark : rBoard.mark)
-            .DefaultIfEmpty(board.board.BlackP == 0 ? -1f : 0)
-            .Max());
-        })
-            .MinBy(p => p.mark);
-        //в оригинале:
-        //return (best.board.rBoard, best.mark)
-        return best;
-    }
-
-
-    IEnumerable<(Board board, float mark)> GetBestAndRndMoves(int count)
-    {
-        /*
-         * у нас Moves() возвращает кортеж (board, hasKill)
-         * Саша, я так понимаю, что нам этот hasKill нужен, чтобы понимать, продолжит ли ход игрок
-         * но мы же можем уже после выбора лучшего хода определить, было ли убийство просто сравнив исходное положение противника
-         * и его положение в выбранном лучшем ходе, тогда нам не нужно это тут таскать
-        */
-        SortedSet<(Board board, float mark, float rnd)> bestMoves = new(Comparer<(Board, float, float)>.Create((x,y) => x.Item2.CompareTo(y.Item2)));
+        SortedSet<(Board board, float mark, float rnd)> bestMoves = new(Comparer<(Board, float, float)>.Create((x, y) => x.Item2.CompareTo(y.Item2)));
         SortedSet<(Board board, float mark, float rnd)> rndMoves = new(Comparer<(Board, float, float)>.Create((x, y) => x.Item3.CompareTo(y.Item3)));
 
-        var moves = Moves().Chunk(100).SelectMany(chunk => (chunk.Select(c => c.board).Zip(Evaluate(chunk.Select(c => c.board).ToArray()))));
+        IEnumerable<(Board Board, float Mark)> moves = Moves().Chunk(100).SelectMany(chunk => chunk.Zip(evaluater.Evaluate(chunk)));
         //в оригинале было так: (т.к. Moves() просто коллекцию досок возвращал)
         //var moves = Moves().Chunk(100).SelectMany(chunk => chunk.Zip(Evaluate(chunk)));
 
         foreach (var move in moves)
         {
             var rnd = Random.Shared.NextSingle();
-            if (bestMoves.Count < count)
-                bestMoves.Add((move.First, move.Second, rnd));
-            else if(move.Second > bestMoves.Min.mark)
+            if (bestMoves.Count < evaluater.CountTakedBestMoves)
+                bestMoves.Add((move.Board, move.Mark, rnd));
+            else if (move.Mark > bestMoves.Min.mark)
             {
                 bestMoves.Remove(bestMoves.Min);
-                bestMoves.Add((move.First, move.Second, rnd));
+                bestMoves.Add((move.Board, move.Mark, rnd));
             }
-            
-            if (rndMoves.Count < count + 1)
-                rndMoves.Add((move.First, move.Second, rnd));
+
+            if (rndMoves.Count < evaluater.CountTakedBestMoves + 1)
+                rndMoves.Add((move.Board, move.Mark, rnd));
             else if (rnd > rndMoves.Min.rnd)
             {
                 rndMoves.Remove(rndMoves.Min);
-                rndMoves.Add((move.First, move.Second, rnd));
+                rndMoves.Add((move.Board, move.Mark, rnd));
             }
         }
         rndMoves.ExceptWith(bestMoves);
-        return bestMoves.Select(m => (m.board,m.mark)).Concat(rndMoves.Select(m => (m.board, m.mark)).Take(1));
-    }
-
-    float[] Evaluate(Board[] moves)
-    {
-        //здесь вычисление оценок ходов (нейросеть)
-        return moves.Select(m => Random.Shared.NextSingle()).ToArray(); //пока массив рандомных оценок
+        return bestMoves.Select(m => (m.board, m.mark)).Concat(rndMoves.Select(m => (m.board, m.mark)).Take(1));
     }
 }
