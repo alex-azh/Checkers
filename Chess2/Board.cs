@@ -1,5 +1,5 @@
-﻿using CheckersGame.Figures;
-using CheckersGame.GameSpace;
+﻿using CheckersGame.Evaluaters;
+using CheckersGame.Figures;
 using System.Numerics;
 
 namespace CheckersGame;
@@ -53,35 +53,36 @@ public record Board(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
         }
         return result;
     }
-    public IEnumerable<(Board board, float mark)> GetBestAndRndMoves(IEvaluater evaluater)
-    {
-        SortedSet<(Board board, float mark, float rnd)> bestMoves = new(Comparer<(Board, float, float)>.Create((x, y) => x.Item2.CompareTo(y.Item2)));
-        SortedSet<(Board board, float mark, float rnd)> rndMoves = new(Comparer<(Board, float, float)>.Create((x, y) => x.Item3.CompareTo(y.Item3)));
 
-        IEnumerable<(Board Board, float Mark)> moves = Moves().Chunk(100).SelectMany(chunk => chunk.Zip(evaluater.Evaluate(chunk)));
-        //в оригинале было так: (т.к. Moves() просто коллекцию досок возвращал)
-        //var moves = Moves().Chunk(100).SelectMany(chunk => chunk.Zip(Evaluate(chunk)));
+    //public IEnumerable<(Board board, float mark)> GetBestAndRndMoves(IEvaluater evaluater)
+    //{
+    //    SortedSet<(Board board, float mark, float rnd)> bestMoves = new(Comparer<(Board, float, float)>.Create((x, y) => x.Item2.CompareTo(y.Item2)));
+    //    SortedSet<(Board board, float mark, float rnd)> rndMoves = new(Comparer<(Board, float, float)>.Create((x, y) => x.Item3.CompareTo(y.Item3)));
 
-        foreach (var move in moves)
-        {
-            var rnd = Random.Shared.NextSingle();
-            if (bestMoves.Count < evaluater.CountTakedBestMoves)
-                bestMoves.Add((move.Board, move.Mark, rnd));
-            else if (move.Mark > bestMoves.Min.mark)
-            {
-                bestMoves.Remove(bestMoves.Min);
-                bestMoves.Add((move.Board, move.Mark, rnd));
-            }
+    //    IEnumerable<(Board Board, float Mark)> moves = Moves().Chunk(100).SelectMany(chunk => chunk.Zip(evaluater.Evaluate(chunk)));
+    //    //в оригинале было так: (т.к. Moves() просто коллекцию досок возвращал)
+    //    //var moves = Moves().Chunk(100).SelectMany(chunk => chunk.Zip(Evaluate(chunk)));
 
-            if (rndMoves.Count < evaluater.CountTakedBestMoves + 1)
-                rndMoves.Add((move.Board, move.Mark, rnd));
-            else if (rnd > rndMoves.Min.rnd)
-            {
-                rndMoves.Remove(rndMoves.Min);
-                rndMoves.Add((move.Board, move.Mark, rnd));
-            }
-        }
-        rndMoves.ExceptWith(bestMoves);
-        return bestMoves.Select(m => (m.board, m.mark)).Concat(rndMoves.Select(m => (m.board, m.mark)).Take(1));
-    }
+    //    foreach (var move in moves)
+    //    {
+    //        var rnd = Random.Shared.NextSingle();
+    //        if (bestMoves.Count < evaluater.CountTakedBestMoves)
+    //            bestMoves.Add((move.Board, move.Mark, rnd));
+    //        else if (move.Mark > bestMoves.Min.mark)
+    //        {
+    //            bestMoves.Remove(bestMoves.Min);
+    //            bestMoves.Add((move.Board, move.Mark, rnd));
+    //        }
+
+    //        if (rndMoves.Count < evaluater.CountTakedBestMoves + 1)
+    //            rndMoves.Add((move.Board, move.Mark, rnd));
+    //        else if (rnd > rndMoves.Min.rnd)
+    //        {
+    //            rndMoves.Remove(rndMoves.Min);
+    //            rndMoves.Add((move.Board, move.Mark, rnd));
+    //        }
+    //    }
+    //    rndMoves.ExceptWith(bestMoves);
+    //    return bestMoves.Select(m => (m.board, m.mark)).Concat(rndMoves.Select(m => (m.board, m.mark)).Take(1));
+    //}
 }
