@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 namespace CheckersTests.Benchmarks;
 public class TestClass
 {
-    byte data;
 }
 public class TestClass2(TestClass test)
 {

@@ -1,12 +1,12 @@
 ﻿namespace CheckersGame.GameSpace;
 
-public class Game(IPlayer whitePlayer, IPlayer blackPlayer)
+public sealed class Game(IPlayer whitePlayer, IPlayer blackPlayer)
 {
     private readonly IDictionary<IPlayer, IPlayer> Opponents = new Dictionary<IPlayer, IPlayer>
     {
         { whitePlayer, blackPlayer }, { blackPlayer, whitePlayer }
     };
-    public Board CheckersBoard { get; private set; } = Board.NewBoard();
+    public Board CheckersBoard { get; set; } = Board.NewBoard();
     public ushort MovesWhithoutKillsCount { get; set; } = 0;
     public bool GameContinue => MovesWhithoutKillsCount < 50 && CheckersBoard.Moves().Any();
     public IPlayer LastPlayer { get; private set; } = whitePlayer;

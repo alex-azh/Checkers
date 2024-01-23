@@ -33,9 +33,9 @@ public static class Queen
                     };
                 }
             }
-            #endregion kills
+            #endregion
 
-            #endregion Forward
+            #endregion
 
             #region Backward
 
@@ -64,9 +64,9 @@ public static class Queen
                     };
                 }
             }
-            #endregion kills
+            #endregion
 
-            #endregion Backward
+            #endregion
         }
     }
 }

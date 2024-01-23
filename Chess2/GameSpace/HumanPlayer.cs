@@ -1,6 +1,6 @@
 ﻿namespace CheckersGame.GameSpace;
 
-public sealed class HumanPlayer : IPlayer
+public record struct HumanPlayer(string Name = "Person") : IPlayer
 {
     public Board Move(Board board)
     {

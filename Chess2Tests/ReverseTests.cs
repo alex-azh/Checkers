@@ -20,7 +20,7 @@ namespace CheckersTests
         [TestMethod]
         public void Rev2Test()
         {
-            uint reversed = UintHelper.Reverse(AllWhite);
+            uint reversed = AllWhite.Reverse();
             Debug.WriteLine(reversed.ToString("b"));
             Debug.WriteLine(AllBlack.ToString("b"));
             Assert.AreEqual(AllBlack, reversed);
