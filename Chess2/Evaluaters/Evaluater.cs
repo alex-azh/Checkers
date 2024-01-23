@@ -64,7 +64,7 @@ public class Evaluater(IPredictor modelPredictor, int depth, int countTakedBestM
         return best;
     }
 
-
+    // TODO: вернуть сет
     IEnumerable<(Board board, float mark)> GetBestAndRndMoves(Board board)
     {
         SortedSet<(Board board, float mark, float rnd)> bestMoves = new(Comparer<(Board, float, float)>.Create((x, y) => x.Item2.CompareTo(y.Item2)));

@@ -11,12 +11,14 @@ public sealed class Game(IPlayer whitePlayer, IPlayer blackPlayer)
     public bool GameContinue => MovesWhithoutKillsCount < 50 && CheckersBoard.Moves().Any();
     public IPlayer LastPlayer { get; private set; } = whitePlayer;
     public bool Reversed { get; private set; } = false;
-    public IEnumerable<(Board board, bool reversed)> Start()
+    public List<(Board board, bool reversed)> Start()
     {
+        List<(Board, bool)> list = [];
         while (GameContinue)
         {
             Board move = LastPlayer.Move(CheckersBoard);
-            yield return (move, Reversed);
+            list.Add((move, Reversed));
+            //yield return (move, Reversed);
             if (move.Blacks != CheckersBoard.Blacks)
             {
                 CheckersBoard = move;
@@ -31,5 +33,6 @@ public sealed class Game(IPlayer whitePlayer, IPlayer blackPlayer)
                 MovesWhithoutKillsCount++;
             }
         }
+        return list;
     }
 }
