@@ -35,7 +35,7 @@ public class Evaluater(IPredictor modelPredictor, int depth, int countTakedBestM
     /// <param name="moves">Доски для оценки.</param>
     /// <returns>Оценки, соответствующие каждым доскам.</returns>
     public float[] Evaluate(Board[] moves) => Model.Predict(moves.Select(x => x.BoolArray()).ToArray());
-    
+
     /// <summary>
     /// Получить лучший ход с текущего состояния доски.
     /// </summary>
@@ -53,7 +53,17 @@ public class Evaluater(IPredictor modelPredictor, int depth, int countTakedBestM
     {
         (Board rBoard, float mark) best = GetBestAndRndMoves(board).Select(board =>
         {
-            IEnumerable<(Board board, float mark)> moves = GetBestAndRndMoves(board.board.Flip());//.ToList();
+            //TODO: сделать другую логику.
+            //var flipped = board.board.Flip();
+            //if (depthSearch > 0 && flipped.Moves().Any())
+            //{
+            //    return GetBestMove(flipped, depthSearch - 1);
+            //}
+            //else
+            //{
+
+            //}
+            IEnumerable<(Board board, float mark)> moves = GetBestAndRndMoves(board.board.Flip());
             return (board.board, mark: moves
             .Select(rBoard => depthSearch > 0 && rBoard.board.Moves().Any()
             ? GetBestMove(rBoard.board, depthSearch - 1).mark : rBoard.mark)
@@ -62,6 +72,7 @@ public class Evaluater(IPredictor modelPredictor, int depth, int countTakedBestM
         })
        .MinBy(p => p.mark);
         return best;
+        //return (best.rBoard, -best.mark);
     }
 
     // TODO: вернуть сет

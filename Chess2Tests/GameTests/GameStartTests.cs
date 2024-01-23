@@ -45,9 +45,20 @@ namespace CheckersTests.GameTests
         [TestMethod]
         public void RunnerTest()
         {
-            Game game = new Game(new ComputerPlayer(), new ComputerPlayer());
+            ComputerPlayer player1 = new(new Evaluater(new ModelPredictor())),
+                player2 = new(new Evaluater(new ModelPredictor()));
+            Game game = new Game(player1, player2);
             IEnumerable<(Board board, bool reversed)> moves = game.Start();
-
+            Console.WriteLine(moves.Count());
+        }
+        [TestMethod]
+        public void RunnerTest2()
+        {
+            ComputerPlayer player1 = new(new Evaluater(new RandomPredictor())),
+                player2 = new(new Evaluater(new RandomPredictor()));
+            Game game = new Game(player1, player2);
+            IEnumerable<(Board board, bool reversed)> moves = game.Start();
+            Console.WriteLine(moves.Count());
         }
     }
 }
