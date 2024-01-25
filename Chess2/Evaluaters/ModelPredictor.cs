@@ -11,8 +11,8 @@ namespace CheckersGame.Evaluaters;
 /// </summary>
 public class ModelPredictor : IPredictor
 {
-    private static Sequential _sequential;
-    static ModelPredictor()
+    private Sequential _sequential;
+    public ModelPredictor()
     {
         // load model
         _sequential = Sequential(

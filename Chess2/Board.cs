@@ -4,6 +4,11 @@ using System.Numerics;
 namespace CheckersGame;
 public record Board(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
 {
+    public Board(int[] whiteP, int[] whiteD, int[] blackP, int[] blackD) : this(
+        UintHelper.CreateNumber(whiteP), 
+        UintHelper.CreateNumber(whiteD), 
+        UintHelper.CreateNumber(blackP), 
+        UintHelper.CreateNumber(blackD)) { }
     public static Board NewBoard() => new(0b00_00000_00000_00000_00011_11111_11111, 0, 0b11_11111_11111_00000_00000_00000_00000, 0);
     public uint Whites => WhiteP | WhiteD;
     public uint Blacks => BlackP | BlackD;

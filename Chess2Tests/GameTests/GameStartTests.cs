@@ -37,10 +37,6 @@ namespace CheckersTests.GameTests
             Assert.AreEqual(first.board.Whites, second.board.Flip().Whites);
             (Board board, bool reversed) three = moves3[2]; // white сходил
             Assert.AreEqual(second.board.Flip().Blacks, three.board.Blacks);
-            //(int fromPos, int toPos, int killedPos) m2 = Board.WhoMoved(moves3[1].board, moves3[2].board);
-
-            //Debug.WriteLine(cnt);
-            //Debug.WriteLine(game.MovesWhithoutKillsCount);
         }
         [TestMethod]
         public void RunnerTest()
@@ -53,6 +49,15 @@ namespace CheckersTests.GameTests
         }
         [TestMethod]
         public void RunnerTest2()
+        {
+            ComputerPlayer player1 = new(new Evaluater(new RandomPredictor())),
+                player2 = new(new Evaluater(new RandomPredictor()));
+            Game game = new Game(player1, player2);
+            IEnumerable<(Board board, bool reversed)> moves = game.Start();
+            Console.WriteLine(moves.Count());
+        }
+        [TestMethod]
+        public void RunnerTest3()
         {
             ComputerPlayer player1 = new(new Evaluater(new RandomPredictor())),
                 player2 = new(new Evaluater(new RandomPredictor()));
