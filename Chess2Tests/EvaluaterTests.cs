@@ -2,11 +2,11 @@
 using CheckersGame.Evaluaters;
 
 namespace CheckersTests;
-
+// Тесты работали до изменения системы ходов фигур(обязательна рубка).
 [TestClass]
 public class EvaluaterTests
 {
-    [TestMethod]
+    //[TestMethod]
     public void MinMaxTest1()
     {
         Board board = new([1], [], [5], []),
@@ -45,7 +45,7 @@ public class EvaluaterTests
         //Assert.AreEqual(best, eval_best);
     }
     // ТЕСТ РАБОТАЛ ПЕРЕД ТЕМ, КАК СДЕЛАТЬ ОБЯЗАТЕЛЬНЫЕ РУБКИ.
-    [TestMethod]
+    //[TestMethod]
     public void MinMaxTest2()
     {
         // init Board

@@ -5,10 +5,11 @@ namespace CheckersGame;
 public record Board(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
 {
     public Board(int[] whiteP, int[] whiteD, int[] blackP, int[] blackD) : this(
-        UintHelper.CreateNumber(whiteP), 
-        UintHelper.CreateNumber(whiteD), 
-        UintHelper.CreateNumber(blackP), 
-        UintHelper.CreateNumber(blackD)) { }
+        UintHelper.CreateNumber(whiteP),
+        UintHelper.CreateNumber(whiteD),
+        UintHelper.CreateNumber(blackP),
+        UintHelper.CreateNumber(blackD))
+    { }
     public static Board NewBoard() => new(0b00_00000_00000_00000_00011_11111_11111, 0, 0b11_11111_11111_00000_00000_00000_00000, 0);
     public uint Whites => WhiteP | WhiteD;
     public uint Blacks => BlackP | BlackD;
@@ -16,13 +17,49 @@ public record Board(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
 
     public IEnumerable<Board> Moves()
     {
-        foreach (var result in Checkers.Moves(this))
+        if (Checkers.Kills(this).Any() || Queen.Kills(this).Any())
         {
-            yield return result;
+            foreach (Board killBoard in Checkers.Kills(this).Concat(Queen.Kills(this)))
+            {
+                // по каждой рубке надо получить всевозможные ситуации
+                Stack<Board> stack = [];
+                stack.Push(killBoard);
+                Board prev = this;
+                //int lastPos = WhoMovedWhites(this, killBoard).toPos;
+                while (stack.Count > 0)
+                {
+                    Board poped = stack.Pop();
+                    IEnumerable<Board> killsBoardsFromLastPos =
+                        // concat с Queens потому что пешка могла стать дамкой
+                        from k in Checkers.Kills(poped).Concat(Queen.Kills(poped))
+                            //where WhoMovedWhites(poped, k).fromPos == WhoMovedWhites(prev, poped).fromPos
+                        where WhoMovedWhites(poped, k).fromPos == WhoMovedWhites(prev, poped).toPos
+                        select k;
+                    if (killsBoardsFromLastPos.Any())
+                    {
+                        foreach (var k in killsBoardsFromLastPos)
+                        {
+                            stack.Push(k);
+                        }
+                        prev = poped;
+                    }
+                    else
+                    {
+                        yield return poped;
+                    }
+                }
+            }
         }
-        foreach (var result in Queen.Moves(this))
+        else
         {
-            yield return result;
+            foreach (Board b in Checkers.Moves(this))
+            {
+                yield return b;
+            }
+            foreach (Board b in Queen.Moves(this))
+            {
+                yield return b;
+            }
         }
     }
 

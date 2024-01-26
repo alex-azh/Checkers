@@ -1,6 +1,6 @@
 ﻿using CheckersGame;
 
-namespace CheckersTests;
+namespace CheckersTests.Moves;
 
 [TestClass]
 public class CheckersMoves

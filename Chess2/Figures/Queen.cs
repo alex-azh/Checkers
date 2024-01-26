@@ -2,24 +2,11 @@
 
 public static class Queen
 {
-    public static IEnumerable<Board> Moves(Board board)
+    public static IEnumerable<Board> Kills(Board board)
     {
         foreach (uint position in board.WhiteD.ExtractOnes())
         {
-            #region Forward
-
-            #region steps
             Masks.Steps.TryGetValue(position, out uint variant);
-            foreach (uint newPosition in (variant & ~board.All).ExtractOnes())
-            {
-                yield return board with
-                {
-                    WhiteD = board.WhiteD & ~position | newPosition
-                };
-            }
-            #endregion steps
-
-            #region kills
             foreach (uint killedFigurePosition in (variant & board.Blacks).ExtractOnes())
             {
                 Masks.StepsByDirection.TryGetValue(killedFigurePosition | position, out uint stepPos);
@@ -33,24 +20,7 @@ public static class Queen
                     };
                 }
             }
-            #endregion
-
-            #endregion
-
-            #region Backward
-
-            #region steps
             Masks.StepsBackward.TryGetValue(position, out uint backwardSteps);
-            foreach (uint newPosition in (backwardSteps & ~board.All).ExtractOnes())
-            {
-                yield return board with
-                {
-                    WhiteD = board.WhiteD & ~position | newPosition
-                };
-            }
-            #endregion steps
-
-            #region kills
             foreach (uint killedFigurePosition in (backwardSteps & board.Blacks).ExtractOnes())
             {
                 Masks.KillsBackward.TryGetValue(killedFigurePosition | position, out uint stepPos);
@@ -64,9 +34,30 @@ public static class Queen
                     };
                 }
             }
-            #endregion
+        }
+    }
 
-            #endregion
+
+    public static IEnumerable<Board> Moves(Board board)
+    {
+        foreach (uint position in board.WhiteD.ExtractOnes())
+        {
+            Masks.Steps.TryGetValue(position, out uint variant);
+            foreach (uint newPosition in (variant & ~board.All).ExtractOnes())
+            {
+                yield return board with
+                {
+                    WhiteD = board.WhiteD & ~position | newPosition
+                };
+            }
+            Masks.StepsBackward.TryGetValue(position, out uint backwardSteps);
+            foreach (uint newPosition in (backwardSteps & ~board.All).ExtractOnes())
+            {
+                yield return board with
+                {
+                    WhiteD = board.WhiteD & ~position | newPosition
+                };
+            }
         }
     }
 }

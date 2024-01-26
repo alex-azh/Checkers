@@ -2,7 +2,7 @@
 using CheckersGame.Figures;
 using System.Diagnostics;
 
-namespace CheckersTests;
+namespace CheckersTests.Moves;
 
 [TestClass]
 public class QueenMovesTests
@@ -11,7 +11,7 @@ public class QueenMovesTests
     public void ForwardKill_Test1()
     {
         Board board = new(0, UintHelper.CreateNumber(0, 1, 18), UintHelper.CreateNumber(4, 8, 5, 22), 0);
-        List<(int fromPos, int toPos, int killedPos)> results = (from b in Queen.Moves(board)
+        List<(int fromPos, int toPos, int killedPos)> results = (from b in Queen.Kills(board).Concat(Queen.Moves(board))
                                                                  select Board.WhoMovedWhites(board, b))
                        .ToList();
         List<(int, int, int)> expected = new()
@@ -51,13 +51,10 @@ public class QueenMovesTests
     public void BackwardKillsTest()
     {
         Board board = new(0, UintHelper.CreateNumber(31, 16, 2), 0, UintHelper.CreateNumber(27, 5, 25, 12, 20, 9, 6, 11));
-        List<(int fromPos, int toPos, int killedPos)> results = (from b in Queen.Moves(board)
+        List<(int fromPos, int toPos, int killedPos)> results = (from b in Queen.Kills(board)
                                                                  select Board.WhoMovedWhites(board, b))
                        .ToList();
-        List<(int, int, int)> expected = new()
-        {
-            (31,22,27)
-        };
+        List<(int, int, int)> expected = [(31, 22, 27)];
         Debug.WriteLine(string.Join(",", results));
         CollectionAssert.AreEquivalent(expected, results);
     }

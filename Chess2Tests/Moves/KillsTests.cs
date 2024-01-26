@@ -1,6 +1,6 @@
 using CheckersGame;
 
-namespace CheckersTests;
+namespace CheckersTests.Moves;
 
 [TestClass]
 public class KillsTests
@@ -17,9 +17,10 @@ public class KillsTests
         {
             (15, 22, 19),
             (0, 9, 4),
-            (21,30,26),
-            (21, 25, 0),
-            (11, 14, 0)
+            (21,30,26)
+            //, простых ходов не должно быть, т.к. об€зательна рубка
+            //(21, 25, 0),
+            //(11, 14, 0)
         };
         List<(int pos, int hod, int dead)> result = doska.Moves().Select(x => Board.WhoMovedWhites(doska, x)).ToList();
         Console.WriteLine(string.Join("\n", result));
@@ -33,10 +34,11 @@ public class KillsTests
         Board doska = new Board(whites, 0, 0, blacks);
         List<(int, int, int)> actual = new List<(int, int, int)>()
         {
+            // простых ходов не должно быть, т.к. об€зательна рубка
+            //(11, 14, 0),
+            //(21, 25, 0),
             (0, 9, 4),
-            (11, 14, 0),
             (15, 22, 19),
-            (21, 25, 0),
             (21, 30, 26)
         };
         List<(int fromPos, int toPos, int killedPos)> result = doska.Moves().Select(x => Board.WhoMovedWhites(doska, x)).ToList();
@@ -51,12 +53,12 @@ public class KillsTests
         Board doska = new Board(whites, 0, 0, blacks);
         List<(int, int, int)> actual = new List<(int, int, int)>()
         {
+            //(11, 14, 0),
+            //(21, 25, 0)
             (0, 9, 4) ,
             (1, 10, 5),
-            (11, 14, 0),
             (15,22,19),
             (21,30,26),
-            (21, 25, 0)
         };
         List<(int fromPos, int toPos, int killedPos)> l = doska.Moves().Select(x => Board.WhoMovedWhites(doska, x)).ToList();
         Console.WriteLine(string.Join(", ", l));
@@ -70,11 +72,11 @@ public class KillsTests
         Board doska = new Board(whites, 0, 0, blacks);
         List<(int, int, int)> actual = new List<(int, int, int)>()
         {
+             //(11, 14, 0)
+            //(21, 25, 0),
             (15, 22, 19),
             (0,9,4),
             (21,30,26),
-            (21, 25, 0),
-             (11, 14, 0)
         };
         List<(int fromPos, int toPos, int killedPos)> result = doska.Moves().Select(x => Board.WhoMovedWhites(doska, x)).ToList();
         CollectionAssert.AreEquivalent(actual, result);
