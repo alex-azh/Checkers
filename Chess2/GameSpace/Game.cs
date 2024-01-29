@@ -10,28 +10,21 @@ public sealed class Game(IPlayer whitePlayer, IPlayer blackPlayer)
     public ushort MovesWhithoutKillsCount { get; set; } = 0;
     public bool GameContinue => MovesWhithoutKillsCount < 50 && CheckersBoard.Moves().Any();
     public IPlayer LastPlayer { get; private set; } = whitePlayer;
-    public bool Reversed { get; private set; } = false;
-    public List<(Board board, bool reversed)> Start()
+    public List<Board> Start()
     {
-        List<(Board, bool)> list = [];
+        List<Board> list = [];
         while (GameContinue)
         {
             Board move = LastPlayer.Move(CheckersBoard);
-            list.Add((move, Reversed));
-            //yield return (move, Reversed);
+            list.Add(move);
+            // игрок и доска всегда переворачиваются, потому что рубка обязательна.
+            LastPlayer = Opponents[LastPlayer];
+            CheckersBoard = move.Flip();
+            // если кого-то срубили
             if (move.Blacks != CheckersBoard.Blacks)
-            {
-                CheckersBoard = move;
                 MovesWhithoutKillsCount = 0;
-                Reversed = false | Reversed;
-            }
             else
-            {
-                CheckersBoard = move.Flip();
-                Reversed = !Reversed;
-                LastPlayer = Opponents[LastPlayer];
                 MovesWhithoutKillsCount++;
-            }
         }
         return list;
     }

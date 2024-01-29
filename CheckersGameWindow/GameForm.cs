@@ -6,8 +6,11 @@ namespace CheckersGameWindow;
 public partial class GameForm : Form
 {
     List<Button> btns = new();
-    IEnumerator<(Board, bool)> _moves;
+    IEnumerator<Board> _moves;
     Board _lastBoard;
+    Board _currentBoard;
+    bool _reversed = false;
+
     List<Button> _lightsBtns = new();
 
     public GameForm()
@@ -113,7 +116,7 @@ public partial class GameForm : Form
         InitBoard();
         Game game = new Game(new ComputerPlayer(), new ComputerPlayer());
         ShowBoard(game.CheckersBoard);
-        _lastBoard = game.CheckersBoard;
+        _currentBoard = game.CheckersBoard;
         _moves = game.Start().GetEnumerator();
         //foreach ((Board board, bool reversed) in game.Start())
         //{
@@ -127,24 +130,17 @@ public partial class GameForm : Form
     {
         if (_moves.MoveNext())
         {
-            (Board board, bool reversed) = _moves.Current;
-            // _lastBoard не реверснута!
-            if (reversed)
-            {
-                Board presentedBoard = board.Flip();
-                // ходил противник
-                (int fromPos, int toPos, int deletedPos) = Board.WhoMovedBlacks(_lastBoard, presentedBoard);
-                ChangeBoard(fromPos, toPos, deletedPos);
-                _lastBoard = presentedBoard;
-            }
-            else
-            {
-                Board presentedBoard = board;
-                // ходил белый игрок
-                (int fromPos, int toPos, int deletedPos) = Board.WhoMovedWhites(_lastBoard, presentedBoard);
-                ChangeBoard(fromPos, toPos, deletedPos);
-                _lastBoard = presentedBoard;
-            }
+            _lastBoard = _currentBoard;
+            _currentBoard = _reversed ? _moves.Current.Flip() : _moves.Current;
+            ShowBoard(_currentBoard);
+            _reversed = !_reversed;
         }
+    }
+
+    private void button2_Click(object sender, EventArgs e)
+    {
+        var form = new GameForm();
+        form.Show();
+        form.ShowBoard(_lastBoard);
     }
 }
