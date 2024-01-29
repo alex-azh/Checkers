@@ -5,26 +5,21 @@ namespace CheckersTests.Moves;
 [TestClass]
 public class KillsTests
 {
-    public readonly uint AllBlack = 0b11_11111_11111_00000_00000_00000_00000;
-    public readonly uint AllWhite = 0b00_00000_00000_00000_00011_11111_11111;
+
     [TestMethod]
     public void Test1()
     {
         uint whites = UintHelper.CreateNumber(0, 1, 11, 15, 21);
         uint blacks = UintHelper.CreateNumber(4, 8, 5, 10, 18, 19, 26);
         Board doska = new Board(whites, 0, 0, blacks);
-        List<(int, int, int)> actual = new List<(int, int, int)>()
-        {
-            (15, 22, 19),
-            (0, 9, 4),
-            (21,30,26)
-            //, простых ходов не должно быть, т.к. об€зательна рубка
-            //(21, 25, 0),
-            //(11, 14, 0)
-        };
-        List<(int pos, int hod, int dead)> result = doska.Moves().Select(x => Board.WhoMovedWhites(doska, x)).ToList();
-        Console.WriteLine(string.Join("\n", result));
-        CollectionAssert.AreEquivalent(actual, result);
+        List<List<uint>> exp = [
+            [1, 5, 8, 9, 10, 11, 15, 18, 19, 21, 26],
+            [0, 1, 4, 5, 8, 10, 11, 18, 21, 29],
+            [0, 1, 4, 5, 8, 10, 11, 15, 18, 19, 30]
+        ];
+        List<uint> result = doska.Moves().Select(x => x.All.IndexesOfOnesPositions().ToList()).SelectMany(x => x).ToList();
+        List<uint> col1 = exp.SelectMany(x => x).ToList();
+        CollectionAssert.AreEquivalent(col1, result);
     }
     [TestMethod]
     public void Test2()
@@ -84,6 +79,8 @@ public class KillsTests
     [TestMethod]
     public void Test5()
     {
+        uint AllBlack = 0b11_11111_11111_00000_00000_00000_00000;
+        uint AllWhite = 0b00_00000_00000_00000_00011_11111_11111;
         Board doska = new Board(AllWhite, 0, AllBlack, 0);
         Assert.AreEqual(7, doska.Moves().Count());
     }
