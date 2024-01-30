@@ -1,8 +1,6 @@
 ﻿using TorchSharp;
 using TorchSharp.Modules;
-using static Tensorboard.ApiDef.Types;
 using static TorchSharp.torch.nn;
-using static TorchSharp.torch.optim.lr_scheduler.impl;
 
 namespace CheckersGame.Evaluaters;
 
@@ -17,10 +15,15 @@ public class ModelPredictor : IPredictor
         // load model
         _sequential = Sequential(
             ("inputLayer", Linear(128, 64)),
-            ("hidden1", Linear(64, 64)),
-            ("hidden2", Linear(64, 16)),
-            ("hidden", Linear(16, 1))
+            ("func", Sigmoid()),
+            //("hidden1", Linear(64, 64)),
+            //("func", Sigmoid()),
+            ("output", Linear(16, 1))
             );
+    }
+    public ModelPredictor(string modelPath) : this()
+    {
+        Load(modelPath);
     }
     public float[] Predict(bool[][] array)
     {
@@ -29,4 +32,6 @@ public class ModelPredictor : IPredictor
         torch.Tensor result = _sequential.forward(tensor);
         return [.. result.data<float>()];
     }
+    public void Load(string filePath) => _sequential.load(filePath);
+    public void Save(string saveFileLocation) => _sequential.save(saveFileLocation);
 }
