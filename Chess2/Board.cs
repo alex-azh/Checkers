@@ -85,4 +85,16 @@ public record Board(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
         }
         return result;
     }
+    public float[] FloatArray()
+    {
+        float[] result = new float[128];
+        for (int i = 0; i < 32; ++i)
+        {
+            result[i] = WhiteP >> i & 0x01;
+            result[i + 32] = WhiteD >> i & 0x01;
+            result[i + 64] = BlackP >> i & 0x01;
+            result[i + 96] = BlackD >> i & 0x01;
+        }
+        return result;
+    }
 }

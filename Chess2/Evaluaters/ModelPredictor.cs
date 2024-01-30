@@ -1,4 +1,5 @@
-﻿using TorchSharp;
+﻿using CheckersGame.GameSpace;
+using TorchSharp;
 using TorchSharp.Modules;
 using static TorchSharp.torch.nn;
 
@@ -34,4 +35,35 @@ public class ModelPredictor : IPredictor
     }
     public void Load(string filePath) => _sequential.load(filePath);
     public void Save(string saveFileLocation) => _sequential.save(saveFileLocation);
+    public void Train(int epochs, int gamesCount)
+    {
+        Evaluater evaluater = new(this);
+        // загрузить в массивы результаты игр в количестве gameCount
+        (float[][][] moves, float[] gameResults) = GamesCreator();
+
+        for (int i = 0; i < epochs; i++)
+        {
+
+        }
+        (float[][][], float[]) GamesCreator()
+        {
+            List<float[][]> moves = [];
+            List<float> gamesResults = [];
+            for (int i = 0; i < gamesCount; i++)
+            {
+                ComputerPlayer player1 = new ComputerPlayer(evaluater),
+                    player2 = new ComputerPlayer(evaluater);
+                Game game = new(new ComputerPlayer(evaluater), new ComputerPlayer(evaluater));
+                float gameResult = game.Start();
+                if (gameResult != 0)
+                {
+                    moves.Add(player1.Moves.Select(x => x.FloatArray()).ToArray());
+                    moves.Add(player2.Moves.Select(x => x.FloatArray()).ToArray());
+                    gamesResults.Add(gameResult);
+                    gamesResults.Add(-gameResult);
+                }
+            }
+            return (moves.ToArray(), gamesResults.ToArray());
+        }
+    }
 }

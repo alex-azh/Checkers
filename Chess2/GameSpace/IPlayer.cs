@@ -8,4 +8,5 @@ public interface IPlayer
     /// <param name="board"></param>
     /// <returns></returns>
     Board Move(Board board);
+    List<Board> Moves { get; init; }
 }
