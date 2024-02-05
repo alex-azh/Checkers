@@ -52,7 +52,7 @@ public class ModelPredictor : IPredictor
             for (int i = 0; i < gamesCount; i++)
             {
                 ComputerPlayer player1 = new ComputerPlayer(evaluater),
-                    player2 = new ComputerPlayer(evaluater);
+                                player2 = new ComputerPlayer(evaluater);
                 Game game = new(new ComputerPlayer(evaluater), new ComputerPlayer(evaluater));
                 float gameResult = game.Start();
                 if (gameResult != 0)

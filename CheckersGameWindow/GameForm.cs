@@ -10,6 +10,7 @@ public partial class GameForm : Form
     Board _lastBoard;
     Board _currentBoard;
     bool _reversed = false;
+    float result = 0f;
 
     List<Button> _lightsBtns = new();
 
@@ -114,10 +115,16 @@ public partial class GameForm : Form
     private async void Form1_Load(object sender, EventArgs e)
     {
         InitBoard();
-        Game game = new Game(new ComputerPlayer(), new ComputerPlayer());
+        ComputerPlayer player1 = new ComputerPlayer();
+        ComputerPlayer player2 = new ComputerPlayer();
+        Game game = new Game(player1, player2);
         ShowBoard(game.CheckersBoard);
         _currentBoard = game.CheckersBoard;
-        _moves = game.Start().GetEnumerator();
+        result = game.Start();
+        List<Board> steps1 = player1.Moves;
+        List<Board> steps2 = player2.Moves;
+        _moves = steps1.SelectMany((item, index) => steps2.Count > index ? new[] { item, steps2[index] } : new[] { item }).GetEnumerator();
+        //_moves = game.Start().GetEnumerator();
         //foreach ((Board board, bool reversed) in game.Start())
         //{
         //    await Task.Delay(1200);
@@ -134,6 +141,11 @@ public partial class GameForm : Form
             _currentBoard = _reversed ? _moves.Current.Flip() : _moves.Current;
             ShowBoard(_currentBoard);
             _reversed = !_reversed;
+        }
+        else
+        {
+            label1.Visible = true;
+            label1.Text = result == 0 ? "Ничья" : result == -1 ? "Выиграли черные" : "Выиграли белые";
         }
     }
 
