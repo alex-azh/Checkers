@@ -18,12 +18,12 @@ public sealed class Game(IPlayer whitePlayer, IPlayer blackPlayer)
             LastPlayer.Moves.Add(move);
             // игрок и доска всегда переворачиваются, потому что рубка обязательна.
             LastPlayer = Opponents[LastPlayer];
-            CheckersBoard = move.Flip();
             // если кого-то срубили
             if (move.Blacks != CheckersBoard.Blacks)
                 MovesWhithoutKillsCount = 0;
             else
                 MovesWhithoutKillsCount++;
+            CheckersBoard = move.Flip();
         }
 
         if (MovesWhithoutKillsCount == 50)

@@ -55,12 +55,16 @@ public class ModelPredictor : IPredictor
             (List<float> evals, List<float> targets) games = GamesCreator();
             Tensor evals = from_array(games.evals.ToArray()),
                 targets = from_array(games.targets.ToArray());
-            Tensor loss = functional.mse_loss(evals, targets);
+            Tensor loss = functional.mse_loss(evals, targets, Reduction.Sum);
             _optimizer.zero_grad();
             loss.backward();
             _optimizer.step();
             if (stopwatch.Elapsed > durationEpoch)
+            {
                 Save(i, "model_checkers");
+                stopwatch.Restart();
+            }
+            Console.WriteLine(stopwatch.Elapsed);
         }
 
         (List<float> evals, List<float> targets) GamesCreator()
