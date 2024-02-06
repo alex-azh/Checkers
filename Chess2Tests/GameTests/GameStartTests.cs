@@ -29,8 +29,11 @@ namespace CheckersTests.GameTests
         {
             ComputerPlayer player1 = new(new Evaluater(new ModelPredictor())),
                 player2 = new(new Evaluater(new ModelPredictor()));
-            Game game = new Game(player1, player2);
-            _ = game.Start();
+            for (int i = 0; i < 4; i++)
+            {
+                Game game = new(player1, player2);
+                _ = game.Start();
+            }
             Console.WriteLine(player1.Moves.Count + player2.Moves.Count);
         }
         [TestMethod]
@@ -38,8 +41,11 @@ namespace CheckersTests.GameTests
         {
             ComputerPlayer player1 = new(new Evaluater(new RandomPredictor())),
                 player2 = new(new Evaluater(new RandomPredictor()));
-            Game game = new Game(player1, player2);
-            var moves = game.Start();
+            for (int i = 0; i < 10; i++)
+            {
+                Game game = new(player1, player2);
+                _ = game.Start();
+            }
             Console.WriteLine(player1.Moves.Count + player2.Moves.Count);
         }
         [TestMethod]

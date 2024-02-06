@@ -1,4 +1,5 @@
 using CheckersGame;
+using CheckersGame.Evaluaters;
 using CheckersGame.GameSpace;
 
 namespace CheckersGameWindow;
@@ -114,9 +115,13 @@ public partial class GameForm : Form
     }
     private async void Form1_Load(object sender, EventArgs e)
     {
+        const string model1 = @"C:\Users\Azhgihin_AA\source\repos\Chess2\Chess2Tests\bin\Release\net8.0\model_checkers_296";
+        const string model2 = @"C:\Users\Azhgihin_AA\source\repos\Chess2\Chess2Tests\bin\Release\net8.0\model_checkers_98_old";
         InitBoard();
-        ComputerPlayer player1 = new ComputerPlayer();
-        ComputerPlayer player2 = new ComputerPlayer();
+        Evaluater eval = new(new ModelPredictor(model2));
+        Evaluater eval2 = new(new ModelPredictor(model1));
+        ComputerPlayer player1 = new(eval);
+        ComputerPlayer player2 = new(eval2);
         Game game = new Game(player1, player2);
         ShowBoard(game.CheckersBoard);
         _currentBoard = game.CheckersBoard;

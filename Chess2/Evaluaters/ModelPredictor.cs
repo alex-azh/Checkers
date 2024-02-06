@@ -52,9 +52,11 @@ public class ModelPredictor : IPredictor
         Stopwatch stopwatch = Stopwatch.StartNew();
         for (int i = 0; i < epochs; i++)
         {
-            (List<float> evals, List<float> targets) games = GamesCreator();
-            Tensor evals = from_array(games.evals.ToArray()),
-                targets = from_array(games.targets.ToArray());
+            (List<Board> boards, List<float> targets) games = GamesCreator();
+            float[] input = games.boards.SelectMany(x => x.FloatArray()).ToArray();
+            Tensor tensor = from_array(input).reshape(games.boards.Count, 128);
+            Tensor evals = _sequential.forward(tensor);
+            Tensor targets = from_array(games.targets.ToArray());
             Tensor loss = functional.mse_loss(evals, targets, Reduction.Sum);
             _optimizer.zero_grad();
             loss.backward();
@@ -64,13 +66,14 @@ public class ModelPredictor : IPredictor
                 Save(i, "model_checkers");
                 stopwatch.Restart();
             }
-            Console.WriteLine(stopwatch.Elapsed);
+            //Console.WriteLine(stopwatch.Elapsed);
         }
+        Save(0, string.Format("model_checkers_end_{0}", DateTime.Now));
 
-        (List<float> evals, List<float> targets) GamesCreator()
+        (List<Board> boards, List<float> targets) GamesCreator()
         {
             const float df = 0.7f;
-            List<float> evals = [], targets = [];
+            List<Board> boards = []; List<float> targets = [];
             ComputerPlayer player1 = new(evaluater), player2 = new(evaluater);
             for (int i = 0; i < gamesCount; i++)
             {
@@ -78,15 +81,15 @@ public class ModelPredictor : IPredictor
                 float gameResult = game.Start();
                 if (gameResult != 0)
                 {
-                    evals.AddRange(player1.Moves.Select(x => x.Mark));
-                    evals.AddRange(player2.Moves.Select(x => x.Mark));
+                    boards.AddRange(player1.Moves);
+                    boards.AddRange(player2.Moves);
                     targets.AddRange(Target(player1.Moves, gameResult).Reverse());
                     targets.AddRange(Target(player2.Moves, -gameResult).Reverse());
                 }
                 player1.Moves.Clear();
                 player2.Moves.Clear();
             }
-            return (evals, targets);
+            return (boards, targets);
             static IEnumerable<float> Target(List<Board> moves, float result)
             {
                 float next = result;
