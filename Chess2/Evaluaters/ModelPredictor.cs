@@ -131,8 +131,10 @@ public class ModelPredictor : IPredictor
         {
             float[] input = games.boards.SelectMany(x => x.FloatArray()).ToArray();
             Tensor tensor = from_array(input).reshape(games.boards.Count, 128);
+            if (cuda_is_available()) tensor.cuda();
             Tensor evals = _sequential.forward(tensor);
             Tensor targets = from_array(games.targets.ToArray());
+            if (cuda_is_available()) targets.cuda();
             Tensor loss = functional.mse_loss(evals, targets, Reduction.Sum);
             _optimizer.zero_grad();
             loss.backward();
