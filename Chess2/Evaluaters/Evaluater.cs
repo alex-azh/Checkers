@@ -41,7 +41,12 @@ public class Evaluater(IPredictor modelPredictor, int depth, int countTakedBestM
     /// </summary>
     /// <param name="board">Доска, с которой требуется получить лучший ход.</param>
     /// <returns>Доска после лучшего хода.</returns>
-    public Board GetBestMove(Board board) => GetBestMove(board, Depth).board;
+    public Board GetBestMove(Board board)
+    {
+        (Board board, float mark) move = GetBestMove(board, Depth);
+        move.board.Mark = board.Mark;
+        return move.board;
+    }
 
     /// <summary>
     /// Получить лучший ход с текущего состояния доски и его оценку.
@@ -51,21 +56,21 @@ public class Evaluater(IPredictor modelPredictor, int depth, int countTakedBestM
     /// <returns>Доска после лучшего хода и её оценка.</returns>
     public (Board board, float mark) GetBestMove(Board board, float depthSearch)
     {
-     //   (Board rBoard, float mark) best = GetBestAndRndMoves(board).Select(board =>
-     //   {
-     //       SortedSet<(Board board, float mark, float)> moves = GetBestAndRndMoves(board.board.Flip());
-     //       return (board.board, mark: moves
-     //       .Select(rBoard => depthSearch > 0 && rBoard.board.Moves().Any()
-     //       ? GetBestMove(rBoard.board, depthSearch - 1).mark : rBoard.mark)
-     //       .DefaultIfEmpty(board.board.BlackP == 0 ? -1f : 0)
-     //       .Max());
-     //   })
-     //.MinBy(p => p.mark);
-     //   return best;
+        //   (Board rBoard, float mark) best = GetBestAndRndMoves(board).Select(board =>
+        //   {
+        //       SortedSet<(Board board, float mark, float)> moves = GetBestAndRndMoves(board.board.Flip());
+        //       return (board.board, mark: moves
+        //       .Select(rBoard => depthSearch > 0 && rBoard.board.Moves().Any()
+        //       ? GetBestMove(rBoard.board, depthSearch - 1).mark : rBoard.mark)
+        //       .DefaultIfEmpty(board.board.BlackP == 0 ? -1f : 0)
+        //       .Max());
+        //   })
+        //.MinBy(p => p.mark);
+        //   return best;
         (Board rBoard, float mark) best = GetBestAndRndMoves(board).Select(board =>
         {
             //TODO: сделать другую логику.
-            var flipped = board.board.Flip();
+            Board flipped = board.board.Flip();
             return (depthSearch > 0, flipped.Moves().Any()) switch
             {
                 (false, true) => (board.board, board.mark),

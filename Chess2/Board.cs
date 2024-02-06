@@ -14,6 +14,7 @@ public record Board(uint WhiteP, uint WhiteD, uint BlackP, uint BlackD)
     public uint Whites => WhiteP | WhiteD;
     public uint Blacks => BlackP | BlackD;
     public uint All => Whites | Blacks;
+    public float Mark { get; set; }
 
     public IEnumerable<Board> Moves()
     {
