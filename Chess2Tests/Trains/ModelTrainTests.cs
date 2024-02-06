@@ -27,10 +27,18 @@ public class ModelTrainTests
         predictor.Train(300, 50, new(0, 0, 10));
     }
     [TestMethod]
-    public void GameTest()
+    public void GameTest2()
     {
         var predictor = new ModelPredictor();
-        predictor.Load("model_checkers_98_old");
-        ComputerPlayer p1 = new(new Evaluater(predictor)), p2 = new(new Evaluater(predictor));
+        //predictor.Load(@"C:\Users\Azhgihin_AA\source\repos\Chess2\Chess2Tests\bin\Release\net8.0\model_checkers_296");
+        var eval = new Evaluater(predictor);
+        ComputerPlayer p1 = new(eval), p2 = new(eval);
+        for (int j = 0; j < 1; j++)
+        {
+            (List<CheckersGame.Board> boards, List<float> targets, List<float> res) = ModelPredictor.GamesCreator(100, eval);
+            predictor.Train((boards, targets), 100, 100, new(23, 0, 0));
+            Console.WriteLine($"plus: {res.Count(x => x == 1f)}; minus: {res.Count(x => x == -1f)}; zero: {res.Count(x => x == 0f)}");
+        }
     }
 }
+// Я ОТОШЁЛ
