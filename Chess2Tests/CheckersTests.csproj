@@ -15,6 +15,7 @@
     <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
     <PackageReference Include="coverlet.collector" Version="3.2.0" />
     <PackageReference Include="TorchSharp" Version="0.101.5" />
+    <PackageReference Include="TorchSharp-cuda-windows" Version="0.101.5" />
   </ItemGroup>
 
   <ItemGroup>

@@ -15,6 +15,8 @@ public class ModelPredictor : IPredictor
 {
     private Sequential _sequential;
     private OptimizerHelper _optimizer;
+    public Device DEVICE = torch.device(DeviceType.CUDA);
+
     public ModelPredictor()
     {
         // load model
@@ -26,32 +28,32 @@ public class ModelPredictor : IPredictor
         init.normal_(lin2.weight);
         init.normal_(lin3.weight);
         init.normal_(lin4.weight);
+        var sigm = Sigmoid();
+        var tanh = Tanh();
+
         _sequential = Sequential(
             ("inputLayer", lin1),
-            ("func", Sigmoid()),
+            ("func", sigm),
             ("hidden1", lin2),
-            ("func", Sigmoid()),
+            ("func", sigm),
             ("hidden2", lin3),
-            ("func", Sigmoid()),
+            ("func", sigm),
             ("output", lin4),
-            ("func", Tanh())
-            );
+            ("func", tanh)
+            ).to("cuda");
+        //_sequential.cuda(0);
         double learningRate = 0.001;
         _optimizer = Adam(_sequential.parameters(), learningRate);
-        if (torch.cuda_is_available())
-        {
-            _sequential.cuda();
-            _optimizer.to(torch.CUDA);
-        }
     }
     public ModelPredictor(string modelPath) : this()
     {
         Load(modelPath);
     }
-    public float[] Predict(bool[][] array)
+    public float[] Predict(float[][] array)
     {
-        float[] input = array.SelectMany(x => x.Select(x => x ? 1f : 0f)).ToArray();
-        torch.Tensor tensor = torch.from_array(input).reshape(array.Length, 128);
+        using var nograd = torch.no_grad();
+        float[] input = array.SelectMany(x => x).ToArray();
+        torch.Tensor tensor = torch.from_array(input, "cuda").reshape(array.Length, 128);
         torch.Tensor result = _sequential.forward(tensor);
         return [.. result.data<float>()];
     }
@@ -69,11 +71,9 @@ public class ModelPredictor : IPredictor
         {
             (List<Board> boards, List<float> targets, List<float> results) games = GamesCreator(gamesCount, evaluater);
             float[] input = games.boards.SelectMany(x => x.FloatArray()).ToArray();
-            Tensor tensor = from_array(input).reshape(games.boards.Count, 128);
-            if (cuda_is_available()) tensor.cuda();
+            Tensor tensor = from_array(input, "cuda").reshape(games.boards.Count, 128);
             Tensor evals = _sequential.forward(tensor);
-            Tensor targets = from_array(games.targets.ToArray());
-            if (cuda_is_available()) targets.cuda();
+            Tensor targets = from_array(games.targets.ToArray(), "cuda");
             Tensor loss = functional.mse_loss(evals, targets, Reduction.Sum);
             _optimizer.zero_grad();
             loss.backward();
@@ -130,11 +130,9 @@ public class ModelPredictor : IPredictor
         for (int i = 0; i < epochs; i++)
         {
             float[] input = games.boards.SelectMany(x => x.FloatArray()).ToArray();
-            Tensor tensor = from_array(input).reshape(games.boards.Count, 128);
-            if (cuda_is_available()) tensor.cuda();
+            Tensor tensor = from_array(input, "cuda").reshape(games.boards.Count, 128);
             Tensor evals = _sequential.forward(tensor);
-            Tensor targets = from_array(games.targets.ToArray());
-            if (cuda_is_available()) targets.cuda();
+            Tensor targets = from_array(games.targets.ToArray(), "cuda");
             Tensor loss = functional.mse_loss(evals, targets, Reduction.Sum);
             _optimizer.zero_grad();
             loss.backward();

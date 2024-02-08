@@ -2,7 +2,7 @@
 
 public interface IPredictor
 {
-    float[] Predict(bool[][] array);
+    float[] Predict(float[][] array);
     void Load(string modelFilePath);
     void Save(int epochNumber, string modelFilePath);
 }

@@ -34,7 +34,7 @@ public class Evaluater(IPredictor modelPredictor, int depth, int countTakedBestM
     /// </summary>
     /// <param name="moves">Доски для оценки.</param>
     /// <returns>Оценки, соответствующие каждым доскам.</returns>
-    public float[] Evaluate(Board[] moves) => Model.Predict(moves.Select(x => x.BoolArray()).ToArray());
+    public float[] Evaluate(Board[] moves) => Model.Predict(moves.Select(x => x.FloatArray()).ToArray());
 
     /// <summary>
     /// Получить лучший ход с текущего состояния доски.
