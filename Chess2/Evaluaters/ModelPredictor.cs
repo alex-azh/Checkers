@@ -17,7 +17,7 @@ public class ModelPredictor : IPredictor
     private OptimizerHelper _optimizer;
     public Device DEVICE = torch.device(DeviceType.CPU);
     //public Device DEVICE = torch.device(torch.cuda.is_available() ? DeviceType.GPU : DeviceType.CPU);
-
+    public static int COUNTPredicts = 0;
     public ModelPredictor()
     {
         // load model
@@ -48,6 +48,7 @@ public class ModelPredictor : IPredictor
     }
     public float[] Predict(float[][] array)
     {
+        COUNTPredicts += array.Length;
         using var nograd = torch.no_grad();
         float[] input = array.SelectMany(x => x).ToArray();
         torch.Tensor tensor = torch.from_array(input, DEVICE).reshape(array.Length, 128);

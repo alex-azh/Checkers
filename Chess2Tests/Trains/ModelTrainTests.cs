@@ -99,17 +99,18 @@ public class ModelTrainTests
         //predictor.Load(@"C:\Users\Azhgihin_AA\source\repos\Chess2\Chess2Tests\bin\Release\net8.0\model_checkers_296");
         var eval = new Evaluater(predictor);
         ComputerPlayer p1 = new(eval), p2 = new(eval);
-        for (int j = 0; j < 10; j++)
+        for (int j = 0; j < 1; j++)
         {
             (List<CheckersGame.Board> boards, List<float> targets, List<float> res) = ModelPredictor.GamesCreator(100, eval);
             predictor.Train((boards, targets), epochs: 100, gamesCount: 200, new(23, 0, 0));
             Console.WriteLine($"plus: {res.Count(x => x == 1f)}; minus: {res.Count(x => x == -1f)}; zero: {res.Count(x => x == 0f)}");
+            Console.WriteLine(ModelPredictor.COUNTPredicts);
         }
     }
     [TestMethod]
     public void ModelCudaTest()
     {
-        var DEVICE = torch.device("cuda");
+        var DEVICE = torch.device(DeviceType.CUDA);
         Linear lin1 = Linear(128, 64, false, DEVICE),
             lin2 = Linear(64, 32, false, DEVICE),
             lin3 = Linear(32, 16, false, DEVICE),
@@ -125,10 +126,22 @@ public class ModelTrainTests
            ("func", sigm),
            ("output", lin4),
            ("func", tanh));
-        var t1 = randn(7, 128);
-        for (int i = 0; i < 200; i++)
+        var t1 = randn(7, 128).to(DEVICE);
+        for (int epoch = 0; epoch < 1; epoch++)
         {
-            _ = sequential.forward(t1);
+            for (int game = 0; game < 500; game++)
+            {
+                // по каждому ходу
+                for (int moveIndex = 0; moveIndex < 150; moveIndex++)
+                {
+                    // примерно 20 в глубину
+                    for (int j = 0; j < 20; j++)
+                    {
+                        _ = sequential.forward(t1);
+                    }
+                }
+
+            }
         }
     }
     [TestMethod]
@@ -159,7 +172,7 @@ public class ModelTrainTests
     [TestMethod]
     public void ModelCudaTest_ExtractData()
     {
-        var DEVICE = torch.device("cuda");
+        var DEVICE = torch.device(DeviceType.CUDA);
         Linear lin1 = Linear(128, 64, false, DEVICE),
             lin2 = Linear(64, 32, false, DEVICE),
             lin3 = Linear(32, 16, false, DEVICE),
@@ -175,10 +188,22 @@ public class ModelTrainTests
            ("func", sigm),
            ("output", lin4),
            ("func", tanh));
-        var t1 = randn(7, 128);
-        for (int i = 0; i < 200; i++)
+        var t1 = randn(7, 128).to(DEVICE);
+        for(int epoch=0; epoch<1;epoch++)
         {
-            _ = sequential.forward(t1).to("cpu").data<float>().ToArray();
+            for (int game = 0; game < 500; game++)
+            {
+                // по каждому ходу
+                for (int moveIndex = 0; moveIndex < 150; moveIndex++)
+                {
+                    // примерно 20 в глубину
+                    for (int j = 0; j < 20; j++)
+                    {
+                        _ = sequential.forward(t1).to("cpu").data<float>().ToArray();
+                    }
+                }
+
+            }
         }
     }
     [TestMethod]
@@ -201,10 +226,21 @@ public class ModelTrainTests
            ("output", lin4),
            ("func", tanh));
         var t1 = randn(7, 128);
-        for (int i = 0; i < 200; i++)
+        for (int epoch = 0; epoch < 1000; epoch++)
         {
-            _ = sequential.forward(t1);
-            _ = sequential.forward(t1).data<float>().ToArray();
+            for (int game = 0; game < 500; game++)
+            {
+                // по каждому ходу
+                for (int moveIndex = 0; moveIndex < 150; moveIndex++)
+                {
+                    // примерно 20 в глубину
+                    for (int j = 0; j < 20; j++)
+                    {
+                        _ = sequential.forward(t1).to("cpu").data<float>().ToArray();
+                    }
+                }
+
+            }
         }
     }
 }
