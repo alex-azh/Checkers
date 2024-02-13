@@ -15,7 +15,8 @@ public class ModelPredictor : IPredictor
 {
     private Sequential _sequential;
     private OptimizerHelper _optimizer;
-    public Device DEVICE = torch.device(torch.cuda.is_available() ? DeviceType.CUDA : DeviceType.CPU);
+    public Device DEVICE = torch.device(DeviceType.CPU);
+    //public Device DEVICE = torch.device(torch.cuda.is_available() ? DeviceType.CPU : DeviceType.CPU);
 
     public ModelPredictor()
     {
@@ -40,7 +41,8 @@ public class ModelPredictor : IPredictor
             ("func", sigm),
             ("output", lin4),
             ("func", tanh)
-            ).to(DEVICE);
+            );
+        _sequential.to(DEVICE);
         //_sequential.cuda(0);
         double learningRate = 0.001;
         _optimizer = Adam(_sequential.parameters(), learningRate);
