@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TorchSharp;
 using TorchSharp.Modules;
 using static TorchSharp.torch;
 using static TorchSharp.torch.nn;
@@ -106,18 +107,104 @@ public class ModelTrainTests
         }
     }
     [TestMethod]
-    public void tt()
+    public void ModelCudaTest()
     {
-
-        var sequential = nn.Sequential(
-            ("inputLayer", Linear(1000, 64)),
-            ("func", Sigmoid()),
-            ("hidden1", Linear(64, 1)),
-            ("func", Tanh())
-            );
-
-        var t1 = TorchSharp.torch.randn(1000, 1000);
-        sequential.forward(t1);
-
+        var DEVICE = torch.device("cuda");
+        Linear lin1 = Linear(128, 64, false, DEVICE),
+            lin2 = Linear(64, 32, false, DEVICE),
+            lin3 = Linear(32, 16, false, DEVICE),
+            lin4 = Linear(16, 1, false, DEVICE);
+        var sigm = TorchSharp.torch.nn.Sigmoid().to(DEVICE);
+        var tanh = Tanh().to(DEVICE);
+        var sequential = Sequential(
+           ("inputLayer", lin1),
+           ("func", sigm),
+           ("hidden1", lin2),
+           ("func", sigm),
+           ("hidden2", lin3),
+           ("func", sigm),
+           ("output", lin4),
+           ("func", tanh));
+        var t1 = randn(7, 128);
+        for (int i = 0; i < 200; i++)
+        {
+            _ = sequential.forward(t1);
+        }
+    }
+    [TestMethod]
+    public void ModelCpuTest()
+    {
+        var DEVICE = torch.device("cpu");
+        Linear lin1 = Linear(128, 64, false, DEVICE),
+            lin2 = Linear(64, 32, false, DEVICE),
+            lin3 = Linear(32, 16, false, DEVICE),
+            lin4 = Linear(16, 1, false, DEVICE);
+        var sigm = TorchSharp.torch.nn.Sigmoid().to(DEVICE);
+        var tanh = Tanh().to(DEVICE);
+        var sequential = Sequential(
+           ("inputLayer", lin1),
+           ("func", sigm),
+           ("hidden1", lin2),
+           ("func", sigm),
+           ("hidden2", lin3),
+           ("func", sigm),
+           ("output", lin4),
+           ("func", tanh));
+        var t1 = randn(7, 128);
+        for (int i = 0; i < 200; i++)
+        {
+            _ = sequential.forward(t1);
+        }
+    }
+    [TestMethod]
+    public void ModelCudaTest_ExtractData()
+    {
+        var DEVICE = torch.device("cuda");
+        Linear lin1 = Linear(128, 64, false, DEVICE),
+            lin2 = Linear(64, 32, false, DEVICE),
+            lin3 = Linear(32, 16, false, DEVICE),
+            lin4 = Linear(16, 1, false, DEVICE);
+        var sigm = TorchSharp.torch.nn.Sigmoid().to(DEVICE);
+        var tanh = Tanh().to(DEVICE);
+        var sequential = Sequential(
+           ("inputLayer", lin1),
+           ("func", sigm),
+           ("hidden1", lin2),
+           ("func", sigm),
+           ("hidden2", lin3),
+           ("func", sigm),
+           ("output", lin4),
+           ("func", tanh));
+        var t1 = randn(7, 128);
+        for (int i = 0; i < 200; i++)
+        {
+            _ = sequential.forward(t1).to("cpu").data<float>().ToArray();
+        }
+    }
+    [TestMethod]
+    public void ModelCpuTest_ExtractData()
+    {
+        var DEVICE = torch.device("cpu");
+        Linear lin1 = Linear(128, 64, false, DEVICE),
+            lin2 = Linear(64, 32, false, DEVICE),
+            lin3 = Linear(32, 16, false, DEVICE),
+            lin4 = Linear(16, 1, false, DEVICE);
+        var sigm = TorchSharp.torch.nn.Sigmoid().to(DEVICE);
+        var tanh = Tanh().to(DEVICE);
+        var sequential = Sequential(
+           ("inputLayer", lin1),
+           ("func", sigm),
+           ("hidden1", lin2),
+           ("func", sigm),
+           ("hidden2", lin3),
+           ("func", sigm),
+           ("output", lin4),
+           ("func", tanh));
+        var t1 = randn(7, 128);
+        for (int i = 0; i < 200; i++)
+        {
+            _ = sequential.forward(t1);
+            _ = sequential.forward(t1).data<float>().ToArray();
+        }
     }
 }
