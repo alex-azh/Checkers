@@ -98,10 +98,10 @@ public class ModelTrainTests
         //predictor.Load(@"C:\Users\Azhgihin_AA\source\repos\Chess2\Chess2Tests\bin\Release\net8.0\model_checkers_296");
         var eval = new Evaluater(predictor);
         ComputerPlayer p1 = new(eval), p2 = new(eval);
-        for (int j = 0; j < 2; j++)
+        for (int j = 0; j < 10; j++)
         {
             (List<CheckersGame.Board> boards, List<float> targets, List<float> res) = ModelPredictor.GamesCreator(100, eval);
-            predictor.Train((boards, targets), 100, 100, new(23, 0, 0));
+            predictor.Train((boards, targets), epochs: 1000, gamesCount: 500, new(23, 0, 0));
             Console.WriteLine($"plus: {res.Count(x => x == 1f)}; minus: {res.Count(x => x == -1f)}; zero: {res.Count(x => x == 0f)}");
         }
     }

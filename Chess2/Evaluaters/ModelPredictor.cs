@@ -15,8 +15,8 @@ public class ModelPredictor : IPredictor
 {
     private Sequential _sequential;
     private OptimizerHelper _optimizer;
-    public Device DEVICE = torch.device(DeviceType.CPU);
-    //public Device DEVICE = torch.device(torch.cuda.is_available() ? DeviceType.CPU : DeviceType.CPU);
+    public Device DEVICE = torch.device(DeviceType.CUDA);
+    //public Device DEVICE = torch.device(torch.cuda.is_available() ? DeviceType.GPU : DeviceType.CPU);
 
     public ModelPredictor()
     {
@@ -29,9 +29,8 @@ public class ModelPredictor : IPredictor
         init.normal_(lin2.weight);
         init.normal_(lin3.weight);
         init.normal_(lin4.weight);
-        var sigm = Sigmoid();
-        var tanh = Tanh();
-
+        var sigm = Sigmoid().to(DEVICE);
+        var tanh = Tanh().to(DEVICE);
         _sequential = Sequential(
             ("inputLayer", lin1),
             ("func", sigm),
@@ -40,11 +39,9 @@ public class ModelPredictor : IPredictor
             ("hidden2", lin3),
             ("func", sigm),
             ("output", lin4),
-            ("func", tanh)
-            );
-        _sequential.to(DEVICE);
-        //_sequential.cuda(0);
+            ("func", tanh));
         double learningRate = 0.001;
+        var list = this._sequential.parameters().Select(x => x.device_type).ToList();
         _optimizer = Adam(_sequential.parameters(), learningRate);
     }
     public ModelPredictor(string modelPath) : this()
@@ -57,9 +54,7 @@ public class ModelPredictor : IPredictor
         float[] input = array.SelectMany(x => x).ToArray();
         torch.Tensor tensor = torch.from_array(input, DEVICE).reshape(array.Length, 128);
         torch.Tensor result = _sequential.forward(tensor);
-        float[] o = result.data<float>().ToArray();
-        return o;
-        //return [.. Enumerable.Range(0, array.Length).Select(x => 0.1f)];
+        return [.. Enumerable.Range(0, array.Length).Select(x => 0.1f)];
         //return [.. result.data<float>()];
     }
     public void Load(string filePath) => _sequential.load(filePath);
