@@ -102,7 +102,7 @@ public class ModelTrainTests
         for (int j = 0; j < 10; j++)
         {
             (List<CheckersGame.Board> boards, List<float> targets, List<float> res) = ModelPredictor.GamesCreator(100, eval);
-            predictor.Train((boards, targets), epochs: 1000, gamesCount: 500, new(23, 0, 0));
+            predictor.Train((boards, targets), epochs: 100, gamesCount: 200, new(23, 0, 0));
             Console.WriteLine($"plus: {res.Count(x => x == 1f)}; minus: {res.Count(x => x == -1f)}; zero: {res.Count(x => x == 0f)}");
         }
     }
