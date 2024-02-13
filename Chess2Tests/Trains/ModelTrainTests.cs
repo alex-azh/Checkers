@@ -2,6 +2,7 @@
 using CheckersGame.GameSpace;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,6 +42,56 @@ public class ModelTrainTests
         Console.WriteLine(t2.device_type);
     }
     [TestMethod]
+    public void CpuMultiTest()
+    {
+        Tensor t1 = TorchSharp.torch.randn(1024, 1024), t2 = TorchSharp.torch.randn(1024, 1024);
+        Stopwatch sw = Stopwatch.StartNew();
+        for (int i = 0; i < 1000; i++)
+        {
+            var t = TorchSharp.torch.mm(t1, t2);
+            _ = t.data<float>().ToArray();
+        }
+        sw.Stop();
+        Console.WriteLine(sw.Elapsed);
+    }
+    [TestMethod]
+    public void CpuMultiTestWithoutData()
+    {
+        Tensor t1 = TorchSharp.torch.randn(1024, 1024), t2 = TorchSharp.torch.randn(1024, 1024);
+        Stopwatch sw = Stopwatch.StartNew();
+        for (int i = 0; i < 1000; i++)
+        {
+            var t = TorchSharp.torch.mm(t1, t2);
+        }
+        sw.Stop();
+        Console.WriteLine(sw.Elapsed);
+    }
+    [TestMethod]
+    public void CudaMultiTest()
+    {
+        Tensor t1 = TorchSharp.torch.randn(1024, 1024).to("cuda"), t2 = TorchSharp.torch.randn(1024, 1024).to("cuda");
+        Stopwatch sw = Stopwatch.StartNew();
+        for (int i = 0; i < 1000; i++)
+        {
+            var t = TorchSharp.torch.mm(t1, t2);
+            _ = t.data<float>().ToArray();
+        }
+        sw.Stop();
+        Console.WriteLine(sw.Elapsed);
+    }
+    [TestMethod]
+    public void CudaMultiTestWithoutData()
+    {
+        Tensor t1 = TorchSharp.torch.randn(1024, 1024).to("cuda"), t2 = TorchSharp.torch.randn(1024, 1024).to("cuda");
+        Stopwatch sw = Stopwatch.StartNew();
+        for (int i = 0; i < 1000; i++)
+        {
+            var t = TorchSharp.torch.mm(t1, t2);
+        }
+        sw.Stop();
+        Console.WriteLine(sw.Elapsed);
+    }
+    [TestMethod]
     public void GameTest2()
     {
         var predictor = new ModelPredictor();
@@ -64,7 +115,7 @@ public class ModelTrainTests
             ("hidden1", Linear(64, 1)),
             ("func", Tanh())
             );
-        
+
         var t1 = TorchSharp.torch.randn(1000, 1000);
         sequential.forward(t1);
 

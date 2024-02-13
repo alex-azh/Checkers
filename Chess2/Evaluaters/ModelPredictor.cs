@@ -15,15 +15,15 @@ public class ModelPredictor : IPredictor
 {
     private Sequential _sequential;
     private OptimizerHelper _optimizer;
-    public Device DEVICE = torch.device(DeviceType.CUDA);
+    public Device DEVICE = torch.device(torch.cuda.is_available() ? DeviceType.CUDA : DeviceType.CPU);
 
     public ModelPredictor()
     {
         // load model
-        Linear lin1 = Linear(128, 64),
-            lin2 = Linear(64, 32),
-            lin3 = Linear(32, 16),
-            lin4 = Linear(16, 1);
+        Linear lin1 = Linear(128, 64, false, DEVICE),
+            lin2 = Linear(64, 32, false, DEVICE),
+            lin3 = Linear(32, 16, false, DEVICE),
+            lin4 = Linear(16, 1, false, DEVICE);
         init.normal_(lin1.weight);
         init.normal_(lin2.weight);
         init.normal_(lin3.weight);
@@ -40,7 +40,7 @@ public class ModelPredictor : IPredictor
             ("func", sigm),
             ("output", lin4),
             ("func", tanh)
-            ).to("cuda");
+            ).to(DEVICE);
         //_sequential.cuda(0);
         double learningRate = 0.001;
         _optimizer = Adam(_sequential.parameters(), learningRate);
@@ -53,9 +53,12 @@ public class ModelPredictor : IPredictor
     {
         using var nograd = torch.no_grad();
         float[] input = array.SelectMany(x => x).ToArray();
-        torch.Tensor tensor = torch.from_array(input, "cuda").reshape(array.Length, 128);
+        torch.Tensor tensor = torch.from_array(input, DEVICE).reshape(array.Length, 128);
         torch.Tensor result = _sequential.forward(tensor);
-        return [.. result.data<float>()];
+        float[] o = result.data<float>().ToArray();
+        return o;
+        //return [.. Enumerable.Range(0, array.Length).Select(x => 0.1f)];
+        //return [.. result.data<float>()];
     }
     public void Load(string filePath) => _sequential.load(filePath);
     public void Save(int epochNumber, string saveFileLocation) => _sequential.save(saveFileLocation + $"_{epochNumber}");
@@ -71,9 +74,9 @@ public class ModelPredictor : IPredictor
         {
             (List<Board> boards, List<float> targets, List<float> results) games = GamesCreator(gamesCount, evaluater);
             float[] input = games.boards.SelectMany(x => x.FloatArray()).ToArray();
-            Tensor tensor = from_array(input, "cuda").reshape(games.boards.Count, 128);
+            Tensor tensor = from_array(input, DEVICE).reshape(games.boards.Count, 128);
             Tensor evals = _sequential.forward(tensor);
-            Tensor targets = from_array(games.targets.ToArray(), "cuda");
+            Tensor targets = from_array(games.targets.ToArray(), DEVICE);
             Tensor loss = functional.mse_loss(evals, targets, Reduction.Sum);
             _optimizer.zero_grad();
             loss.backward();
@@ -130,9 +133,9 @@ public class ModelPredictor : IPredictor
         for (int i = 0; i < epochs; i++)
         {
             float[] input = games.boards.SelectMany(x => x.FloatArray()).ToArray();
-            Tensor tensor = from_array(input, "cuda").reshape(games.boards.Count, 128);
+            Tensor tensor = from_array(input, DEVICE).reshape(games.boards.Count, 128);
             Tensor evals = _sequential.forward(tensor);
-            Tensor targets = from_array(games.targets.ToArray(), "cuda");
+            Tensor targets = from_array(games.targets.ToArray(), DEVICE);
             Tensor loss = functional.mse_loss(evals, targets, Reduction.Sum);
             _optimizer.zero_grad();
             loss.backward();
