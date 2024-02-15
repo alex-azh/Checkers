@@ -44,8 +44,8 @@ public class Evaluater(IPredictor modelPredictor, int depth, int countTakedBestM
     public Board GetBestMove(Board board)
     {
         (Board board, float mark) move = GetBestMove(board, Depth);
-        Console.WriteLine(ModelPredictor.COUNTPredicts);
-        ModelPredictor.COUNTPredicts = 0;
+        //Console.WriteLine(ModelPredictor.COUNTPredicts);
+        //ModelPredictor.COUNTPredicts = 0;
         move.board.Mark = board.Mark;
         return move.board;
     }

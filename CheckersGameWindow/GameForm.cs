@@ -115,8 +115,8 @@ public partial class GameForm : Form
     }
     private async void Form1_Load(object sender, EventArgs e)
     {
-        const string model1 = @"C:\Users\Azhgihin_AA\source\repos\Chess2\Chess2Tests\bin\Release\net8.0\model_checkers_296";
-        const string model2 = @"C:\Users\Azhgihin_AA\source\repos\Chess2\Chess2Tests\bin\Release\net8.0\model_checkers_98_old";
+        const string model1 = @"D:\models_checkers\model_checkers_0";
+        const string model2 = @"D:\models_checkers\model_checkers_9999";
         InitBoard();
         Evaluater eval = new(new ModelPredictor(model2));
         Evaluater eval2 = new(new ModelPredictor(model1));

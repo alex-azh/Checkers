@@ -18,6 +18,56 @@ namespace CheckersTests.Trains;
 public class ModelTrainTests
 {
     [TestMethod]
+    public void OthersModelTest()
+    {
+        ModelPredictor p = new(), p2 = new();
+        p.Load(@"D:\models_checkers\model_checkers_5555");
+        p2.Load(@"D:\models_checkers\model_checkers_9999");
+        Evaluater ev1 = new(p), ev2 = new(p2);
+        DoGames(1000);
+        void DoGames(int cnt = 1000)
+        {
+            float zero;
+            float wins = zero = 0;
+            for (int i = 0; i < cnt; i++)
+            {
+                var game = new Game(new ComputerPlayer(ev1), new ComputerPlayer(ev2));
+                var result = game.Start();
+                switch (result)
+                {
+                    case > 0: wins++; break;
+                    case 0f: zero++; break;
+                }
+            }
+            Console.WriteLine($"младшая(за белых) выиграла={wins} из {cnt} игр, ничья={zero}");
+            wins = zero = 0;
+            for (int i = 0; i < cnt; i++)
+            {
+                var game = new Game(new ComputerPlayer(ev2), new ComputerPlayer(ev1));
+                var result = game.Start();
+                switch (result)
+                {
+                    case > 0: wins++; break;
+                    case 0f: zero++; break;
+                }
+            }
+            Console.WriteLine($"старшая(за белых) выиграла={wins} из {cnt} игр, ничья={zero}");
+        }
+    }
+    [TestMethod]
+    public void LoadTest()
+    {
+        var p = new ModelPredictor();
+        var arr1 = p._sequential.parameters().First().data<float>().ToArray();
+        Console.WriteLine(string.Join(" ", arr1));
+        Console.WriteLine(arr1.Length);
+        p.Load(@"C:\Users\Azhgihin_AA\source\repos\Chess2\Chess2Tests\bin\Release\net8.0\model_checkers_0");
+        var arr2 = p._sequential.parameters().First().data<float>().ToArray();
+        Console.WriteLine(string.Join(" ", arr2));
+        Console.WriteLine(arr2.Length);
+        Assert.AreNotEqual(arr1[0], arr2[0]);
+    }
+    [TestMethod]
     public void Train1()
     {
         var predictor = new ModelPredictor();
@@ -96,15 +146,15 @@ public class ModelTrainTests
     public void GameTest2()
     {
         var predictor = new ModelPredictor();
-        //predictor.Load(@"C:\Users\Azhgihin_AA\source\repos\Chess2\Chess2Tests\bin\Release\net8.0\model_checkers_296");
+        predictor.Load(@"D:\models_checkers\model_checkers_2491");
         var eval = new Evaluater(predictor);
-        ComputerPlayer p1 = new(eval), p2 = new(eval);
-        for (int j = 0; j < 1; j++)
+        for (int j = 2492; j < 10_000; j++)
         {
             (List<CheckersGame.Board> boards, List<float> targets, List<float> res) = ModelPredictor.GamesCreator(100, eval);
-            predictor.Train((boards, targets), epochs: 100, gamesCount: 200, new(23, 0, 0));
-            Console.WriteLine($"plus: {res.Count(x => x == 1f)}; minus: {res.Count(x => x == -1f)}; zero: {res.Count(x => x == 0f)}");
-            Console.WriteLine(ModelPredictor.COUNTPredicts);
+            predictor.Train((boards, targets), epochs: 100, gamesCount: 300, new(0, 0, 20));
+            predictor.Save(j, "model_checkers");
+            //Console.WriteLine($"plus: {res.Count(x => x == 1f)}; minus: {res.Count(x => x == -1f)}; zero: {res.Count(x => x == 0f)}");
+            //Console.WriteLine(ModelPredictor.COUNTPredicts);
         }
     }
     [TestMethod]
@@ -189,7 +239,7 @@ public class ModelTrainTests
            ("output", lin4),
            ("func", tanh));
         var t1 = randn(7, 128).to(DEVICE);
-        for(int epoch=0; epoch<1;epoch++)
+        for (int epoch = 0; epoch < 1; epoch++)
         {
             for (int game = 0; game < 500; game++)
             {

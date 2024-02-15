@@ -13,7 +13,7 @@ namespace CheckersGame.Evaluaters;
 /// </summary>
 public class ModelPredictor : IPredictor
 {
-    private Sequential _sequential;
+    public Sequential _sequential;
     private OptimizerHelper _optimizer;
     public Device DEVICE = torch.device(DeviceType.CPU);
     //public Device DEVICE = torch.device(torch.cuda.is_available() ? DeviceType.GPU : DeviceType.CPU);
@@ -41,6 +41,7 @@ public class ModelPredictor : IPredictor
         double learningRate = 0.001;
         var list = this._sequential.parameters().Select(x => x.device_type).ToList();
         _optimizer = Adam(_sequential.parameters(), learningRate);
+        _sequential.eval();
     }
     public ModelPredictor(string modelPath) : this()
     {
@@ -48,7 +49,7 @@ public class ModelPredictor : IPredictor
     }
     public float[] Predict(float[][] array)
     {
-        COUNTPredicts += array.Length;
+        //COUNTPredicts += array.Length;
         using var nograd = torch.no_grad();
         float[] input = array.SelectMany(x => x).ToArray();
         torch.Tensor tensor = torch.from_array(input, DEVICE).reshape(array.Length, 128);
@@ -57,12 +58,13 @@ public class ModelPredictor : IPredictor
         return [.. result.data<float>()];
     }
     public void Load(string filePath) => _sequential.load(filePath);
-    public void Save(int epochNumber, string saveFileLocation) => _sequential.save(saveFileLocation + $"_{epochNumber}");
+    public void Save(int epochNumber, string saveFileLocation) => _sequential.save(Path.Combine(@"D:\models_checkers", saveFileLocation) + $"_{epochNumber}");
     public void Train(int epochs, int gamesCount, TimeSpan durationEpoch)
     {
         //TODO: вывести среднее время эпохи
         //TODO: сделать chunk
         //TODO: какие варианты выбирает нейронная сеть из лучших (статистика после эпох обучения)
+        _sequential.train();
         Evaluater evaluater = new(this);
         // загрузить в массивы результаты игр в количестве gameCount
         Stopwatch stopwatch = Stopwatch.StartNew();
@@ -84,6 +86,7 @@ public class ModelPredictor : IPredictor
             //}
             //Console.WriteLine(stopwatch.Elapsed);
         }
+        _sequential.eval();
     }
 
     public static (List<Board> boards, List<float> targets, List<float> gameResults) GamesCreator(int gamesCount, Evaluater evaluater)
@@ -125,7 +128,6 @@ public class ModelPredictor : IPredictor
         //TODO: какие варианты выбирает нейронная сеть из лучших (статистика после эпох обучения)
         Evaluater evaluater = new(this);
         // загрузить в массивы результаты игр в количестве gameCount
-        Stopwatch stopwatch = Stopwatch.StartNew();
         for (int i = 0; i < epochs; i++)
         {
             float[] input = games.boards.SelectMany(x => x.FloatArray()).ToArray();
@@ -136,11 +138,6 @@ public class ModelPredictor : IPredictor
             _optimizer.zero_grad();
             loss.backward();
             _optimizer.step();
-            //if (stopwatch.Elapsed > durationEpoch)
-            //{
-            //    Save(i, "model_checkers");
-            //    stopwatch.Restart();
-            //}
             //Console.WriteLine(stopwatch.Elapsed);
         }
         //Save(0, string.Format("model_checkers_end_{0}", DateTime.Now));
