@@ -21,8 +21,8 @@ public class ModelTrainTests
     public void OthersModelTest()
     {
         ModelPredictor p = new(), p2 = new();
-        p.Load(@"D:\models_checkers\model_checkers_5555");
-        p2.Load(@"D:\models_checkers\model_checkers_9999");
+        p.Load(@"D:\models_checkers\model_checkers_0");
+        p2.Load(@"D:\models_checkers\model_checkers_2491");
         Evaluater ev1 = new(p), ev2 = new(p2);
         DoGames(1000);
         void DoGames(int cnt = 1000)
